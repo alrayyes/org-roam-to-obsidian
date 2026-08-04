@@ -13,6 +13,14 @@ pre-commit:
       glob: "*.md"
       run: bunx markdownlint --fix {staged_files}
       stage_fixed: true
+    prettier-yaml:
+      glob: "*.{yml,yaml}"
+      run: bunx prettier --write {staged_files}
+      stage_fixed: true
+    prettier-json:
+      glob: "*.json"
+      run: bunx prettier --write {staged_files}
+      stage_fixed: true
 
 commit-msg:
   commands:
