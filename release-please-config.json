@@ -3,7 +3,11 @@
   "packages": {
     ".": {
       "package-name": "org-roam-to-obsidian",
-      "changelog-path": "CHANGELOG.md"
+      "changelog-path": "CHANGELOG.md",
+      "extra-files": [
+        "pyproject.toml",
+        "package.json"
+      ]
     }
   },
   "bump-minor-pre-major": true,
