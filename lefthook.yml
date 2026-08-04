@@ -26,3 +26,17 @@ commit-msg:
   commands:
     commitlint:
       run: bunx --bun commitlint --edit {1}
+
+pre-push:
+  parallel: true
+  commands:
+    ruff-format-check:
+      run: .venv/bin/ruff format --check .
+    ruff-check:
+      run: .venv/bin/ruff check .
+    markdownlint:
+      run: bunx markdownlint '**/*.md' --ignore node_modules --ignore output --ignore CHANGELOG.md
+    prettier-yaml:
+      run: bunx prettier --check '**/*.{yml,yaml}' --ignore-path .gitignore
+    prettier-json:
+      run: bunx prettier --check '**/*.json' --ignore-path .gitignore
