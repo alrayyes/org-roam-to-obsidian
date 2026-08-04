@@ -1,4 +1,4 @@
-name: Auto-merge release PRs
+name: Auto-merge
 
 on:
   pull_request:
@@ -12,8 +12,9 @@ jobs:
   auto-merge:
     runs-on: ubuntu-latest
     if: |
-      github.event.pull_request.user.login == 'github-actions[bot]' &&
-      startsWith(github.event.pull_request.title, 'chore(main): release')
+      (github.event.pull_request.user.login == 'github-actions[bot]' &&
+       startsWith(github.event.pull_request.title, 'chore(main): release')) ||
+      github.event.pull_request.user.login == 'dependabot[bot]'
     steps:
       - name: Enable auto-merge
         run: gh pr merge --auto --squash "$PR_URL"
