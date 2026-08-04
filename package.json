@@ -1,6 +1,6 @@
 {
   "name": "org-roam-to-obsidian",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "Convert org-roam notes to Obsidian markdown format",
   "private": true,
   "devDependencies": {
