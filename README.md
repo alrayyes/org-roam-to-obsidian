@@ -13,7 +13,7 @@ Convert your org-roam notes to Obsidian-compatible Markdown format.
 
 ## Requirements
 
-- Python 3.6+
+- Python 3.8+
 - No external dependencies required (uses only standard library)
 
 ## Installation
@@ -29,6 +29,23 @@ Make the script executable:
 
 ```bash
 chmod +x convert.py
+```
+
+### Development Setup
+
+For contributing or development:
+
+```bash
+# Create virtual environment
+python -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+
+# Install development tools
+pip install ruff
+
+# Run linter and formatter
+ruff check .
+ruff format .
 ```
 
 ## Usage

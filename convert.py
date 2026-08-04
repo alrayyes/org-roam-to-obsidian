@@ -6,7 +6,6 @@ Convert org-roam files to Obsidian Markdown format.
 import argparse
 import os
 import re
-import sys
 from pathlib import Path
 from typing import Dict, Tuple
 
@@ -16,7 +15,7 @@ def extract_id_and_title(filepath: Path) -> Tuple[str, str]:
     file_id = None
     title = None
 
-    with open(filepath, 'r', encoding='utf-8') as f:
+    with open(filepath, encoding="utf-8") as f:
         in_properties = False
         for line in f:
             if line.strip() == ":PROPERTIES:":
@@ -51,7 +50,7 @@ class OrgRoamConverter:
 
     def convert_org_to_markdown(self, content: str) -> str:
         """Convert org-mode syntax to Markdown."""
-        lines = content.split('\n')
+        lines = content.split("\n")
         result = []
         in_properties = False
         in_src_block = False
@@ -75,7 +74,11 @@ class OrgRoamConverter:
                 continue
 
             # Skip other org-mode directives
-            if line.startswith("#+") and not line.startswith("#+BEGIN") and not line.startswith("#+END"):
+            if (
+                line.startswith("#+")
+                and not line.startswith("#+BEGIN")
+                and not line.startswith("#+END")
+            ):
                 continue
 
             # Skip TOC sections
@@ -116,38 +119,30 @@ class OrgRoamConverter:
 
             # Convert org-mode links [[id:...][title]] or [[url][title]]
             line = re.sub(
-                r'\[\[id:([a-f0-9-]+)]\[([^]]+)]]',
+                r"\[\[id:([a-f0-9-]+)]\[([^]]+)]]",
                 lambda m: f"[[{self.id_to_title.get(m.group(1), m.group(2))}]]",
-                line
+                line,
             )
 
             # Convert [[url][title]] to [title](url)
-            line = re.sub(
-                r'\[\[([^:\]]+)]\[([^]]+)]]',
-                r'[\2](\1)',
-                line
-            )
+            line = re.sub(r"\[\[([^:\]]+)]\[([^]]+)]]", r"[\2](\1)", line)
 
             # Convert [[url]] to [url](url)
-            line = re.sub(
-                r'\[\[([^:\]]+)]]',
-                r'[\1](\1)',
-                line
-            )
+            line = re.sub(r"\[\[([^:\]]+)]]", r"[\1](\1)", line)
 
             result.append(line)
 
         # Add title as front matter if found
         if title:
-            markdown_content = '\n'.join(result).strip()
+            markdown_content = "\n".join(result).strip()
             return f"# {title}\n\n{markdown_content}"
 
-        return '\n'.join(result).strip()
+        return "\n".join(result).strip()
 
     def convert_file(self, org_file: Path) -> bool:
         """Convert a single org file to Markdown."""
         try:
-            with open(org_file, 'r', encoding='utf-8') as f:
+            with open(org_file, encoding="utf-8") as f:
                 content = f.read()
 
             markdown_content = self.convert_org_to_markdown(content)
@@ -155,12 +150,12 @@ class OrgRoamConverter:
             # Create the output filename (remove timestamp prefix, change extension)
             filename = org_file.stem
             # Remove the timestamp prefix (20YYMMDDHHMMSS-)
-            if re.match(r'^\d{14}-', filename):
+            if re.match(r"^\d{14}-", filename):
                 filename = filename[15:]
 
             output_file = self.target_dir / f"{filename}.md"
 
-            with open(output_file, 'w', encoding='utf-8') as f:
+            with open(output_file, "w", encoding="utf-8") as f:
                 f.write(markdown_content)
 
             print(f"Converted: {org_file.name} -> {output_file.name}")
@@ -187,7 +182,9 @@ class OrgRoamConverter:
             if self.convert_file(org_file):
                 success_count += 1
 
-        print(f"\nConversion complete: {success_count}/{len(org_files)} files converted successfully")
+        print(
+            f"\nConversion complete: {success_count}/{len(org_files)} files converted successfully"
+        )
 
 
 def main():
@@ -195,14 +192,16 @@ def main():
         description="Convert org-roam files to Obsidian markdown format"
     )
     parser.add_argument(
-        "-i", "--input",
+        "-i",
+        "--input",
         default=os.path.expanduser("~/Documents/slip-box"),
-        help="Input directory containing org-roam files (default: ~/Documents/slip-box)"
+        help="Input directory containing org-roam files (default: ~/Documents/slip-box)",
     )
     parser.add_argument(
-        "-o", "--output",
+        "-o",
+        "--output",
         default=os.path.join(os.getcwd(), "output"),
-        help="Output directory for markdown files (default: ./output)"
+        help="Output directory for markdown files (default: ./output)",
     )
 
     args = parser.parse_args()
