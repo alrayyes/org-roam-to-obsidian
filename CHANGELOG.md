@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/alrayyes/org-roam-to-obsidian/compare/v1.0.0...v1.1.0) (2026-08-04)
+
+
+### Features
+
+* integrate markdownlint for linting Markdown files ([abd52d4](https://github.com/alrayyes/org-roam-to-obsidian/commit/abd52d415a1512c608766e8aca5f889686d42b93))
+
 ## 1.0.0 (2026-08-04)
 
 
