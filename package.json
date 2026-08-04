@@ -5,6 +5,11 @@
   "private": true,
   "devDependencies": {
     "@commitlint/cli": "21.2.1",
-    "@commitlint/config-conventional": "21.2.0"
+    "@commitlint/config-conventional": "21.2.0",
+    "markdownlint-cli": "0.43.0"
+  },
+  "scripts": {
+    "lint:md": "markdownlint '**/*.md' --ignore node_modules --ignore output --ignore CHANGELOG.md",
+    "lint:md:fix": "markdownlint '**/*.md' --ignore node_modules --ignore output --ignore CHANGELOG.md --fix"
   }
 }

@@ -9,6 +9,10 @@ pre-commit:
       glob: "*.py"
       run: .venv/bin/ruff check --fix {staged_files}
       stage_fixed: true
+    markdownlint:
+      glob: "*.md"
+      run: bunx markdownlint --fix {staged_files}
+      stage_fixed: true
 
 commit-msg:
   commands:

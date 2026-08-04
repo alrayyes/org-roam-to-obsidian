@@ -70,14 +70,16 @@ This project uses [lefthook](https://github.com/evilmartians/lefthook) to manage
 - **commit-msg**: Validates commit messages with [commitlint](https://commitlint.js.org/) following [Conventional Commits](https://www.conventionalcommits.org/)
 
 **Commit message format:**
-```
+
+```text
 <type>[optional scope]: <description>
 
 Types: feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert
 ```
 
 **Examples:**
-```
+
+```text
 feat: add support for org-mode tables
 fix(parser): handle empty code blocks correctly
 docs: update installation instructions
