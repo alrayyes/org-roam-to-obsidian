@@ -10,7 +10,8 @@
           "path": "package.json",
           "jsonpath": "$.version"
         }
-      ]
+      ],
+      "include-component-in-tag": false
     }
   },
   "bump-minor-pre-major": true,
