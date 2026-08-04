@@ -148,7 +148,3 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 - Does not require or use the org-roam database
 - Assumes standard org-roam file structure
 - Best effort conversion - complex org-mode features may not convert perfectly
-
-## Author
-
-Created for converting personal org-roam notes to Obsidian format.
