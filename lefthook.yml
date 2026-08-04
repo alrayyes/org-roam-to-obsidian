@@ -1,0 +1,16 @@
+pre-commit:
+  parallel: true
+  commands:
+    ruff-format:
+      glob: "*.py"
+      run: .venv/bin/ruff format {staged_files}
+      stage_fixed: true
+    ruff-check:
+      glob: "*.py"
+      run: .venv/bin/ruff check --fix {staged_files}
+      stage_fixed: true
+
+commit-msg:
+  commands:
+    commitlint:
+      run: bunx --bun commitlint --edit {1}

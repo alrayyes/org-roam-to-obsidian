@@ -14,7 +14,7 @@ Convert your org-roam notes to Obsidian-compatible Markdown format.
 ## Requirements
 
 - Python 3.8+
-- No external dependencies required (uses only standard library)
+- No external dependencies required (uses only the standard library)
 
 ## Installation
 
@@ -40,13 +40,50 @@ For contributing or development:
 python -m venv .venv
 source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 
-# Install development tools
+# Install Python development tools
 pip install ruff
 
-# Run linter and formatter
+# Install Node.js dependencies (for commitlint) using Bun
+bun install
+
+# Install lefthook for git hooks (optional but recommended)
+# On macOS: brew install lefthook
+# On Arch Linux: yay -S lefthook
+# Or download from: https://github.com/evilmartians/lefthook/releases
+
+# Initialize git hooks
+lefthook install
+
+# Run linter and formatter manually
 ruff check .
 ruff format .
+
+# Test commit message format
+echo "feat: add new feature" | bunx commitlint
 ```
+
+#### Git Hooks
+
+This project uses [lefthook](https://github.com/evilmartians/lefthook) to manage git hooks:
+
+- **pre-commit**: Automatically runs `ruff format` and `ruff check --fix` on staged Python files
+- **commit-msg**: Validates commit messages with [commitlint](https://commitlint.js.org/) following [Conventional Commits](https://www.conventionalcommits.org/)
+
+**Commit message format:**
+```
+<type>[optional scope]: <description>
+
+Types: feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert
+```
+
+**Examples:**
+```
+feat: add support for org-mode tables
+fix(parser): handle empty code blocks correctly
+docs: update installation instructions
+```
+
+Configuration is in `.commitlintrc.json` and follows `@commitlint/config-conventional`.
 
 ## Usage
 
@@ -67,7 +104,7 @@ Specify custom input and output directories:
 ### Options
 
 - `-i, --input`: Input directory containing org-roam files (default: `~/Documents/slip-box`)
-- `-o, --output`: Output directory for markdown files (default: `./output`)
+- `-o, --output`: Output directory for Markdown files (default: `./output`)
 - `-h, --help`: Show help message
 
 ## Example
