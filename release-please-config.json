@@ -1,12 +1,15 @@
 {
-  "release-type": "simple",
   "packages": {
     ".": {
+      "release-type": "python",
       "package-name": "org-roam-to-obsidian",
       "changelog-path": "CHANGELOG.md",
       "extra-files": [
-        "pyproject.toml",
-        "package.json"
+        {
+          "type": "json",
+          "path": "package.json",
+          "jsonpath": "$.version"
+        }
       ]
     }
   },
