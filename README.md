@@ -6,6 +6,7 @@ Convert your org-roam notes to Obsidian-compatible Markdown format.
 
 - Converts org-mode syntax to Markdown
 - Transforms org-roam ID links (`[[id:...][title]]`) to Obsidian wikilinks (`[[title]]`)
+- Extracts org-mode properties and adds them to Obsidian YAML frontmatter
 - Removes org-mode metadata and directives
 - Converts code blocks to Markdown fenced code blocks
 - Removes timestamp prefixes from filenames
@@ -103,10 +104,17 @@ Specify custom input and output directories:
 ./convert.py -i /path/to/org-roam -o /path/to/output
 ```
 
+Extract org-mode properties to frontmatter:
+
+```bash
+./convert.py -p filetags roam_refs
+```
+
 ### Options
 
 - `-i, --input`: Input directory containing org-roam files (default: `~/Documents/slip-box`)
 - `-o, --output`: Output directory for Markdown files (default: `./output`)
+- `-p, --properties`: Org-mode properties to extract (e.g., `filetags`, `roam_refs`)
 - `-h, --help`: Show help message
 
 ## Example
@@ -117,6 +125,9 @@ Specify custom input and output directories:
 
 # Use short flags
 ./convert.py -i ~/org-roam -o ~/obsidian
+
+# Extract filetags and roam_refs properties to frontmatter
+./convert.py -i ~/org-roam -o ~/obsidian -p filetags roam_refs
 ```
 
 ## What Gets Converted
@@ -127,12 +138,29 @@ Specify custom input and output directories:
 - Code blocks: `#+BEGIN_SRC lang` → ` ```lang `
 - ID links: `[[id:abc-123][Title]]` → `[[Title]]`
 - External links: `[[url][text]]` → `[text](url)`
+- Properties: `#+filetags: :tag1:tag2:` → YAML frontmatter
+
+### Frontmatter Generation
+
+When properties are extracted with `-p`, they are added to YAML frontmatter. Properties with a single value use the scalar format, while properties with multiple values use the array format:
+
+```yaml
+---
+title: Note Title
+filetags:
+  - tag1
+  - tag2
+custom_tag: custom_value
+roam_refs: https://example.com
+---
+```
 
 ### Removed Content
 
 - `:PROPERTIES:` blocks
 - `:ID:` fields
-- `#+title:` directives
+- `#+title:` directives (converted to frontmatter and H1 header)
+- Property directives (converted to frontmatter if specified with `-p`)
 - `#+RESULTS:` blocks
 - Table of Contents (`:TOC_:` sections)
 - Timestamp filename prefixes (e.g., `20200613170532-` → removed)

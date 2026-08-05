@@ -7,7 +7,7 @@ import argparse
 import os
 import re
 from pathlib import Path
-from typing import Dict, Tuple
+from typing import Dict, List, Tuple
 
 
 def extract_id_and_title(filepath: Path) -> Tuple[str, str]:
@@ -34,10 +34,11 @@ def extract_id_and_title(filepath: Path) -> Tuple[str, str]:
 
 
 class OrgRoamConverter:
-    def __init__(self, source_dir: str, target_dir: str):
+    def __init__(self, source_dir: str, target_dir: str, properties: List[str] = None):
         self.source_dir = Path(source_dir).expanduser()
         self.target_dir = Path(target_dir)
         self.id_to_title: Dict[str, str] = {}
+        self.properties = properties or []
 
     def build_id_map(self):
         """Build a mapping of IDs to titles from all org files."""
@@ -52,26 +53,40 @@ class OrgRoamConverter:
         """Convert org-mode syntax to Markdown."""
         lines = content.split("\n")
         result = []
-        in_properties = False
+        in_properties_block = False
         in_src_block = False
         skip_toc = False
         title = None
+        frontmatter_props = {}
 
         for line in lines:
             # Skip properties block
             if line.strip() == ":PROPERTIES:":
-                in_properties = True
+                in_properties_block = True
                 continue
             elif line.strip() == ":END:":
-                in_properties = False
+                in_properties_block = False
                 continue
-            elif in_properties:
+            elif in_properties_block:
                 continue
 
             # Extract title
             if line.startswith("#+title:"):
                 title = line.split("#+title:")[1].strip()
                 continue
+
+            # Extract configured properties
+            for prop in self.properties:
+                if line.startswith(f"#+{prop}:"):
+                    prop_value = line.split(f"#+{prop}:")[1].strip()
+                    # Parse values - can be colon-separated like :tag1:tag2: or space-separated
+                    parsed_values = [
+                        val.strip().strip(":")
+                        for val in prop_value.replace(":", " ").split()
+                        if val.strip()
+                    ]
+                    frontmatter_props[prop] = parsed_values
+                    break
 
             # Skip other org-mode directives
             if (
@@ -132,12 +147,31 @@ class OrgRoamConverter:
 
             result.append(line)
 
-        # Add title as front matter if found
-        if title:
-            markdown_content = "\n".join(result).strip()
-            return f"# {title}\n\n{markdown_content}"
+        # Add YAML frontmatter if title or properties are found
+        markdown_content = "\n".join(result).strip()
 
-        return "\n".join(result).strip()
+        if title or frontmatter_props:
+            frontmatter = ["---"]
+            if title:
+                frontmatter.append(f"title: {title}")
+            for prop_name, prop_values in frontmatter_props.items():
+                if len(prop_values) == 1:
+                    # Single value: use scalar format
+                    frontmatter.append(f"{prop_name}: {prop_values[0]}")
+                else:
+                    # Multiple values: use array format
+                    frontmatter.append(f"{prop_name}:")
+                    for val in prop_values:
+                        frontmatter.append(f"  - {val}")
+            frontmatter.append("---")
+            frontmatter_str = "\n".join(frontmatter)
+
+            if title:
+                return f"{frontmatter_str}\n\n# {title}\n\n{markdown_content}"
+            else:
+                return f"{frontmatter_str}\n\n{markdown_content}"
+
+        return markdown_content
 
     def convert_file(self, org_file: Path) -> bool:
         """Convert a single org file to Markdown."""
@@ -203,13 +237,22 @@ def main():
         default=os.path.join(os.getcwd(), "output"),
         help="Output directory for markdown files (default: ./output)",
     )
+    parser.add_argument(
+        "-p",
+        "--properties",
+        nargs="+",
+        default=[],
+        help="Org-mode properties to extract (e.g., filetags roam_refs)",
+    )
 
     args = parser.parse_args()
 
     print(f"Converting org-roam files from: {args.input}")
     print(f"Output directory: {args.output}")
+    if args.properties:
+        print(f"Extracting properties: {', '.join(args.properties)}")
 
-    converter = OrgRoamConverter(args.input, args.output)
+    converter = OrgRoamConverter(args.input, args.output, args.properties)
     converter.convert_all()
 
 
