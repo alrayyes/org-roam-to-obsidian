@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.1.0](https://github.com/alrayyes/org-roam-to-obsidian/compare/v3.0.0...v3.1.0) (2026-08-05)
+
+
+### Features
+
+* add support for customizing created timestamp extraction ([996b198](https://github.com/alrayyes/org-roam-to-obsidian/commit/996b198a5e0ba29668e352d8f5bd0bfb4652f932))
+* add support for extracting org-mode properties to YAML frontmatter ([7315350](https://github.com/alrayyes/org-roam-to-obsidian/commit/73153507c6aa6f1845639ec533d5c238b1936803))
+
 ## [3.0.0](https://github.com/alrayyes/org-roam-to-obsidian/compare/v2.0.0...v3.0.0) (2026-08-04)
 
 
