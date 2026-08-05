@@ -34,11 +34,20 @@ def extract_id_and_title(filepath: Path) -> Tuple[str, str]:
 
 
 class OrgRoamConverter:
-    def __init__(self, source_dir: str, target_dir: str, properties: List[str] = None):
+    def __init__(
+        self,
+        source_dir: str,
+        target_dir: str,
+        properties: List[str] = None,
+        add_created: bool = True,
+        created_property: str = None,
+    ):
         self.source_dir = Path(source_dir).expanduser()
         self.target_dir = Path(target_dir)
         self.id_to_title: Dict[str, str] = {}
         self.properties = properties or []
+        self.add_created = add_created
+        self.created_property = created_property
 
     def build_id_map(self):
         """Build a mapping of IDs to titles from all org files."""
@@ -49,7 +58,7 @@ class OrgRoamConverter:
                 self.id_to_title[file_id] = title
         print(f"Found {len(self.id_to_title)} files with IDs")
 
-    def convert_org_to_markdown(self, content: str) -> str:
+    def convert_org_to_markdown(self, content: str, created_timestamp: str = None) -> str:
         """Convert org-mode syntax to Markdown."""
         lines = content.split("\n")
         result = []
@@ -75,8 +84,10 @@ class OrgRoamConverter:
                 title = line.split("#+title:")[1].strip()
                 continue
 
-            # Extract configured properties
+            # Extract configured properties (skip created_property if it's being used)
             for prop in self.properties:
+                if prop == self.created_property:
+                    continue
                 if line.startswith(f"#+{prop}:"):
                     prop_value = line.split(f"#+{prop}:")[1].strip()
                     # Parse values - can be colon-separated like :tag1:tag2: or space-separated
@@ -150,10 +161,12 @@ class OrgRoamConverter:
         # Add YAML frontmatter if title or properties are found
         markdown_content = "\n".join(result).strip()
 
-        if title or frontmatter_props:
+        if title or frontmatter_props or created_timestamp:
             frontmatter = ["---"]
             if title:
                 frontmatter.append(f"title: {title}")
+            if created_timestamp:
+                frontmatter.append(f"created: {created_timestamp}")
             for prop_name, prop_values in frontmatter_props.items():
                 if len(prop_values) == 1:
                     # Single value: use scalar format
@@ -173,13 +186,36 @@ class OrgRoamConverter:
 
         return markdown_content
 
+    def extract_created_timestamp(self, org_file: Path, content: str) -> str:
+        """Extract created timestamp from filename or specified property."""
+        if self.created_property:
+            # Extract from specified property
+            lines = content.split("\n")
+            for line in lines:
+                if line.startswith(f"#+{self.created_property}:"):
+                    return line.split(f"#+{self.created_property}:")[1].strip()
+
+        # Extract from filename timestamp (format: YYYYMMDDHHMMSS)
+        filename = org_file.stem
+        timestamp_match = re.match(r"^(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})-", filename)
+        if timestamp_match:
+            year, month, day, hour, minute, second = timestamp_match.groups()
+            return f"{year}-{month}-{day}T{hour}:{minute}:{second}"
+
+        return None
+
     def convert_file(self, org_file: Path) -> bool:
         """Convert a single org file to Markdown."""
         try:
             with open(org_file, encoding="utf-8") as f:
                 content = f.read()
 
-            markdown_content = self.convert_org_to_markdown(content)
+            # Extract created timestamp if enabled
+            created_timestamp = None
+            if self.add_created:
+                created_timestamp = self.extract_created_timestamp(org_file, content)
+
+            markdown_content = self.convert_org_to_markdown(content, created_timestamp)
 
             # Create the output filename (remove timestamp prefix, change extension)
             filename = org_file.stem
@@ -244,6 +280,16 @@ def main():
         default=[],
         help="Org-mode properties to extract (e.g., filetags roam_refs)",
     )
+    parser.add_argument(
+        "--no-created",
+        action="store_true",
+        help="Disable adding created timestamp from filename",
+    )
+    parser.add_argument(
+        "--created-property",
+        type=str,
+        help="Use a specific org-mode property for created timestamp instead of filename",
+    )
 
     args = parser.parse_args()
 
@@ -251,8 +297,19 @@ def main():
     print(f"Output directory: {args.output}")
     if args.properties:
         print(f"Extracting properties: {', '.join(args.properties)}")
+    if not args.no_created:
+        if args.created_property:
+            print(f"Using created timestamp from property: {args.created_property}")
+        else:
+            print("Extracting created timestamp from filename")
 
-    converter = OrgRoamConverter(args.input, args.output, args.properties)
+    converter = OrgRoamConverter(
+        args.input,
+        args.output,
+        args.properties,
+        add_created=not args.no_created,
+        created_property=args.created_property,
+    )
     converter.convert_all()
 
 

@@ -115,6 +115,8 @@ Extract org-mode properties to frontmatter:
 - `-i, --input`: Input directory containing org-roam files (default: `~/Documents/slip-box`)
 - `-o, --output`: Output directory for Markdown files (default: `./output`)
 - `-p, --properties`: Org-mode properties to extract (e.g., `filetags`, `roam_refs`)
+- `--no-created`: Disable adding created timestamp from filename
+- `--created-property`: Use a specific org-mode property for created timestamp instead of filename
 - `-h, --help`: Show help message
 
 ## Example
@@ -128,6 +130,12 @@ Extract org-mode properties to frontmatter:
 
 # Extract filetags and roam_refs properties to frontmatter
 ./convert.py -i ~/org-roam -o ~/obsidian -p filetags roam_refs
+
+# Disable created timestamp extraction
+./convert.py --no-created
+
+# Use a custom property for created timestamp instead of filename
+./convert.py --created-property date_created
 ```
 
 ## What Gets Converted
@@ -142,11 +150,14 @@ Extract org-mode properties to frontmatter:
 
 ### Frontmatter Generation
 
-When properties are extracted with `-p`, they are added to YAML frontmatter. Properties with a single value use the scalar format, while properties with multiple values use the array format:
+When properties are extracted with `-p`, they are added to YAML frontmatter. Properties with a single value use the scalar format, while properties with multiple values use the array format.
+
+By default, a `created` timestamp is extracted from the org-roam filename (format: `YYYYMMDDHHMMSS-`) and added to the frontmatter. This can be disabled with `--no-created` or sourced from a custom property with `--created-property`.
 
 ```yaml
 ---
 title: Note Title
+created: 2020-06-13T17:05:32
 filetags:
   - tag1
   - tag2
