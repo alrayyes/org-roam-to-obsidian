@@ -41,8 +41,8 @@ For contributing or development:
 python -m venv .venv
 source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 
-# Install Python development tools
-pip install ruff
+# Install Python development tools (pinned in requirements-dev.txt)
+pip install -r requirements-dev.txt
 
 # Install Node.js dependencies (for commitlint) using Bun
 bun install
@@ -67,8 +67,15 @@ echo "feat: add new feature" | bunx commitlint
 
 This project uses [lefthook](https://github.com/evilmartians/lefthook) to manage git hooks:
 
-- **pre-commit**: Automatically runs `ruff format` and `ruff check --fix` on staged Python files
+- **pre-commit**: Fixes staged files in place — `ruff format` and `ruff check --fix` on Python,
+  `markdownlint --fix` on Markdown, and `prettier --write` on YAML and JSON
 - **commit-msg**: Validates commit messages with [commitlint](https://commitlint.js.org/) following [Conventional Commits](https://www.conventionalcommits.org/)
+- **pre-push**: Re-runs all of the above across the whole repository in check mode, so nothing
+  reaches the remote that CI would reject
+
+The hooks and the GitHub Actions workflows run the same commands deliberately. The hook is there
+to catch a problem early; CI is the gate that cannot be skipped. You can run the checks yourself
+with `bun run lint:md`, `bun run lint:yaml` and `bun run lint:json`.
 
 **Commit message format:**
 

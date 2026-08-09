@@ -20,7 +20,7 @@ updates:
       prefix-development: "chore"
       include: "scope"
 
-  # Python dependencies (if we add requirements.txt later)
+  # Python dependencies (requirements-dev.txt)
   - package-ecosystem: "pip"
     directory: "/"
     schedule:
