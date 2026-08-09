@@ -41,8 +41,8 @@ For contributing or development:
 python -m venv .venv
 source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 
-# Install Python development tools
-pip install ruff
+# Install Python development tools (pinned in requirements-dev.txt)
+pip install -r requirements-dev.txt
 
 # Install Node.js dependencies (for commitlint) using Bun
 bun install
