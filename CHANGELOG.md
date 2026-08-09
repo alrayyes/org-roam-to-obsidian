@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.1.1](https://github.com/alrayyes/org-roam-to-obsidian/compare/v3.1.0...v3.1.1) (2026-08-09)
+
+
+### Documentation
+
+* describe the hooks lefthook actually runs ([806952b](https://github.com/alrayyes/org-roam-to-obsidian/commit/806952b595d0692539e91cfa0a45127857329d96))
+
 ## [3.1.0](https://github.com/alrayyes/org-roam-to-obsidian/compare/v3.0.0...v3.1.0) (2026-08-05)
 
 
