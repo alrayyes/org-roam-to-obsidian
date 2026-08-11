@@ -1,4 +1,4 @@
 # Python development tooling. Pinned exactly so CI, git hooks and local
 # checkouts all run the same linter, and so Dependabot has a fixed starting
 # point to raise upgrade pull requests against.
-ruff==0.16.1
+ruff==0.16.2
