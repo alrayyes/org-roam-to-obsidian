@@ -1,4 +1,4 @@
-# Org-Roam to Obsidian Converter
+# org-roam to Obsidian converter
 
 Convert your org-roam notes to Obsidian-compatible Markdown format.
 
@@ -110,6 +110,45 @@ of being left to fight.
 Prettier runs with `proseWrap: "preserve"`, so it never reflows a paragraph you wrote. It leaves
 `CHANGELOG.md` alone too, because release-please owns that file.
 
+#### Prose
+
+Layout and structure are one thing. Whether the prose reads well is another, and two more tools
+cover that. They check different things, so they're deployed alongside each other rather than one
+instead of the other.
+
+[Vale](https://vale.sh) checks style: house voice, weasel words, corporate speak. It uses the
+Google and proselint packages, which `vale sync` downloads rather than the repo committing them.
+So install Vale (`yay -S vale` on Arch, `brew install vale` on macOS) and run `vale sync` once
+before `bun run lint:prose` will work. The git hooks run Vale when it's on your `PATH` and quietly
+skip it when it isn't. CI runs it either way and reports rather than blocks, because a merge
+stopped by an opinion teaches people to reach for `--no-verify`.
+
+[ltex-cli-plus](https://github.com/ltex-plus/ltex-ls-plus) checks mechanics: grammar, spelling and
+punctuation, by wrapping LanguageTool. This one does fail the build, because mechanics have a
+right answer. It stays out of the git hooks, since it's a ~300 MB download shipping its own Java
+runtime and that's more than a commit should wait on. Run the same engine in your editor over LSP
+(`ltex-ls-plus`, or `harper-ls` if you want something lighter) and CI becomes the fallback instead
+of the first time you hear about a typo.
+
+`styles/House/` holds the rules no published style guide covers. `Filler.yml` catches the
+vocabulary that says nothing, and `EmDash.yml` complains when a paragraph leans on more than one
+em-dash where a full stop would do.
+
+Where the two tools overlap, the rule comes off on one side. `PASSIVE_VOICE` is disabled in
+`.ltex.json` because Vale's styles already flag it. A few others are off for reasons worth
+recording, since a JSON config file can't say so itself:
+
+- `UPPERCASE_SENTENCE_START`, because this README opens with `# org-roam to Obsidian converter`
+  and org-roam is spelled lowercase.
+- `LICENCE_LICENSE_NOUN_SINGULAR`, because the prose is British English but the GNU General Public
+  License and the `LICENSE` file are named with an s, and neither is ours to respell.
+- `Google.Spelling`, for the same British-English reason in the other direction.
+- `Google.EmDash`, which wants em-dashes closed up. The house style spaces them.
+
+Project vocabulary lives in two places, one per tool: `styles/config/vocabularies/House/accept.txt`
+for Vale, and `ltex.dictionary` in `.ltex.json` for LTeX. Add new jargon to both. Vale's copy also
+pins the casing, because `Vale.Terms` is on: spell a product name any other way and it says so.
+
 **Commit message format:**
 
 ```text
@@ -154,7 +193,7 @@ Extract org-mode properties to frontmatter:
 
 - `-i, --input`: Input directory containing org-roam files (default: `~/Documents/slip-box`)
 - `-o, --output`: Output directory for Markdown files (default: `./output`)
-- `-p, --properties`: Org-mode properties to extract (e.g., `filetags`, `roam_refs`)
+- `-p, --properties`: org-mode properties to extract, for example `filetags` or `roam_refs`
 - `--no-created`: Disable adding created timestamp from filename
 - `--created-property`: Use a specific org-mode property for created timestamp instead of filename
 - `-h, --help`: Show help message
@@ -180,7 +219,7 @@ Extract org-mode properties to frontmatter:
 
 ## What Gets Converted
 
-### Org-mode to Markdown
+### org-mode to Markdown
 
 - Headers: `* Header` → `# Header`
 - Code blocks: `#+BEGIN_SRC lang` → ` ```lang `
@@ -188,7 +227,7 @@ Extract org-mode properties to frontmatter:
 - External links: `[[url][text]]` → `[text](url)`
 - Properties: `#+filetags: :tag1:tag2:` → YAML frontmatter
 
-### Frontmatter Generation
+### Generating frontmatter
 
 When properties are extracted with `-p`, they are added to YAML frontmatter. Properties with a single value use the scalar format, while properties with multiple values use the array format.
 
@@ -214,7 +253,7 @@ roam_refs: https://example.com
 - Property directives (converted to frontmatter if specified with `-p`)
 - `#+RESULTS:` blocks
 - Table of Contents (`:TOC_:` sections)
-- Timestamp filename prefixes (e.g., `20200613170532-` → removed)
+- Timestamp filename prefixes, for example `20200613170532-`
 
 ## License
 
@@ -222,7 +261,7 @@ This project is licensed under the GNU General Public License v3.0 - see the [LI
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions are welcome. Open a pull request.
 
 ## Known Limitations
 
