@@ -18,13 +18,34 @@ def converter(tmp_path):
 
 
 class TestHeadings:
-    def test_top_level_heading_becomes_h1(self, converter):
+    def test_top_level_heading_becomes_h1_without_a_title(self, converter):
         assert converter.convert_org_to_markdown("* Introduction") == "# Introduction"
 
-    def test_nesting_depth_is_preserved(self, converter):
+    def test_nesting_depth_is_preserved_without_a_title(self, converter):
         org = "* One\n** Two\n*** Three"
 
         assert converter.convert_org_to_markdown(org) == "# One\n## Two\n### Three"
+
+    def test_headings_shift_down_when_a_title_takes_the_h1(self, converter):
+        org = "#+title: My Note\n\n* Overview\n** Detail"
+
+        markdown = converter.convert_org_to_markdown(org)
+
+        assert markdown.endswith("# My Note\n\n## Overview\n### Detail")
+
+    def test_only_one_h1_survives_a_titled_note(self, converter):
+        org = "#+title: My Note\n\n* One\n* Two"
+
+        markdown = converter.convert_org_to_markdown(org)
+
+        assert [line for line in markdown.split("\n") if line.startswith("# ")] == ["# My Note"]
+
+    def test_the_sixth_level_does_not_overflow(self, converter):
+        org = "#+title: My Note\n\n****** Deep"
+
+        markdown = converter.convert_org_to_markdown(org)
+
+        assert markdown.endswith("###### Deep")
 
 
 class TestQuoteAndExampleBlocks:

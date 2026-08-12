@@ -136,6 +136,7 @@ class OrgRoamConverter:
         in_src_block = False
         in_quote_block = False
         skip_toc = False
+        heading_indices = []
         title = None
         frontmatter_props = {}
 
@@ -248,6 +249,7 @@ class OrgRoamConverter:
                 # sitting in headings.
                 header_text = ORG_LINK.sub(self.convert_link, header_text)
                 header_text = convert_footnotes(header_text)
+                heading_indices.append(len(result))
                 result.append(f"{'#' * level} {header_text}")
                 continue
 
@@ -259,6 +261,18 @@ class OrgRoamConverter:
                 line = convert_table_separator(line)
 
             result.append(line)
+
+        # The title becomes the document's H1, so org's own headings move down a
+        # level to sit under it. Without this every note has at least two H1s and
+        # the outline in Obsidian reads flat. Recorded by index rather than
+        # rewritten in place, so a # inside a code block is never touched.
+        if title:
+            for index in heading_indices:
+                heading = result[index]
+                level = len(heading) - len(heading.lstrip("#"))
+                # Markdown stops at six, so the deepest level absorbs the shift
+                # rather than emitting a heading no renderer understands.
+                result[index] = "#" + heading if level < 6 else heading
 
         # Add YAML frontmatter if title or properties are found
         markdown_content = "\n".join(result).strip()
