@@ -330,6 +330,16 @@ class OrgRoamConverter:
 
             result.append(line)
 
+        # Markdown only renders a footnote where something references it, so a
+        # definition nobody refers to would leave an empty Footnotes section.
+        # Org shows those, so the text is kept as an ordinary line instead.
+        body = "\n".join(result)
+        referenced = set(re.findall(r"\[\^([^\]]+)\](?!:)", body))
+        for index, line in enumerate(result):
+            definition = re.match(r"^\[\^([^\]]+)\]: ?(.*)$", line)
+            if definition and definition.group(1) not in referenced:
+                result[index] = definition.group(2)
+
         # The title becomes the document's H1, so org's own headings move down a
         # level to sit under it. Without this every note has at least two H1s and
         # the outline in Obsidian reads flat. Recorded by index rather than
