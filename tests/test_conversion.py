@@ -314,6 +314,36 @@ class TestFrontmatter:
 
         assert "modified:" not in markdown
 
+    def test_created_key_can_be_renamed(self, tmp_path):
+        converter = OrgRoamConverter(str(tmp_path), str(tmp_path), created_keys=["date"])
+
+        markdown = converter.convert_org_to_markdown("#+title: T", "2020-06-13T17:05:32")
+
+        assert "date: 2020-06-13T17:05:32" in markdown
+        assert "created:" not in markdown
+
+    def test_a_timestamp_can_be_written_under_several_keys(self, tmp_path):
+        converter = OrgRoamConverter(
+            str(tmp_path), str(tmp_path), created_keys=["created", "created_at", "date"]
+        )
+
+        markdown = converter.convert_org_to_markdown("#+title: T", "2020-06-13T17:05:32")
+
+        for key in ["created", "created_at", "date"]:
+            assert f"{key}: 2020-06-13T17:05:32" in markdown
+
+    def test_modified_keys_can_be_renamed(self, tmp_path):
+        converter = OrgRoamConverter(
+            str(tmp_path), str(tmp_path), modified_keys=["lastmod", "last-modified"]
+        )
+
+        markdown = converter.convert_org_to_markdown("#+title: T", None, "2024-04-01T18:42:09")
+
+        assert "lastmod: 2024-04-01T18:42:09" in markdown
+        assert "last-modified: 2024-04-01T18:42:09" in markdown
+        # Line-based: "last-modified:" contains "modified:" as a substring.
+        assert not any(line.startswith("modified:") for line in markdown.split("\n"))
+
     def test_created_timestamp_is_placed_below_the_title(self, converter):
         markdown = converter.convert_org_to_markdown("#+title: My Note", "2020-06-13T17:05:32")
 
