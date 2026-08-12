@@ -114,6 +114,7 @@ Extract org-mode properties to frontmatter:
 - `-o, --output`: Output directory for Markdown files (default: `./output`)
 - `-p, --properties`: org-mode properties to extract, for example `filetags` or `roam_refs`
 - `--no-created`: Disable adding created timestamp from filename
+- `--no-modified`: Disable adding the modified timestamp from the org file's mtime
 - `--created-property`: Use a specific org-mode property for created timestamp instead of filename
 - `-h, --help`: Show help message
 
@@ -152,10 +153,21 @@ When properties are extracted with `-p`, they are added to YAML frontmatter. Pro
 
 By default, a `created` timestamp is extracted from the org-roam filename (format: `YYYYMMDDHHMMSS-`) and added to the frontmatter. This can be disabled with `--no-created` or sourced from a custom property with `--created-property`.
 
+A `modified` timestamp comes from the org file's own modification time, because org-roam records when a
+note was created but not when it was last edited. Disable it with `--no-modified`.
+
+If you publish the vault with a static site generator, that second date matters more than it looks.
+Quartz reads `modified`, `lastmod`, `updated` or `last-modified`, and when it finds none of them it
+falls back to git or the filesystem, which means the date it shows is the day you last exported. Every
+page ends up stamped with the same date. Which of the two a page displays is your generator's choice:
+Quartz picks it with `defaultDateType`, where `modified` shows the last edit and `created` shows the
+org-roam creation date.
+
 ```yaml
 ---
 title: Note Title
 created: 2020-06-13T17:05:32
+modified: 2024-04-01T18:42:09
 filetags:
   - tag1
   - tag2

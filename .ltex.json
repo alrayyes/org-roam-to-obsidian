@@ -33,7 +33,12 @@
       "npm",
       "lockfile",
       "SQLite",
-      "org-roam-to-obsidian"
+      "org-roam-to-obsidian",
+      "mtime",
+      "filesystem",
+      "Quartz",
+      "defaultDateType",
+      "lastmod"
     ]
   },
   "ltex.disabledRules": {

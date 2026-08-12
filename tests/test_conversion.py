@@ -300,6 +300,20 @@ class TestFrontmatter:
 
         assert "filetags:\n  - one\n  - two" in markdown
 
+    def test_modified_follows_created(self, converter):
+        markdown = converter.convert_org_to_markdown(
+            "#+title: My Note", "2020-06-13T17:05:32", "2024-04-01T18:42:09"
+        )
+
+        assert markdown.startswith(
+            "---\ntitle: My Note\ncreated: 2020-06-13T17:05:32\nmodified: 2024-04-01T18:42:09\n---"
+        )
+
+    def test_no_modified_key_when_there_is_no_timestamp(self, converter):
+        markdown = converter.convert_org_to_markdown("#+title: My Note", "2020-06-13T17:05:32")
+
+        assert "modified:" not in markdown
+
     def test_created_timestamp_is_placed_below_the_title(self, converter):
         markdown = converter.convert_org_to_markdown("#+title: My Note", "2020-06-13T17:05:32")
 

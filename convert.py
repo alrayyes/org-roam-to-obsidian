@@ -6,6 +6,7 @@ Convert org-roam files to Obsidian Markdown format.
 import argparse
 import os
 import re
+from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Tuple
 
@@ -92,6 +93,16 @@ def wikilinks_outside_code(markdown: str) -> List[str]:
     return targets
 
 
+def modified_timestamp_of(org_file: Path) -> str:
+    """When the note was last edited, from the org file's own mtime.
+
+    org-roam records a creation time in the filename but nothing for edits, so
+    the filesystem is the only signal there is. Publishing without it leaves a
+    site dating every page at export time, because that is all it can see.
+    """
+    return datetime.fromtimestamp(org_file.stat().st_mtime).strftime("%Y-%m-%dT%H:%M:%S")
+
+
 def parse_property_value(value: str) -> List[str]:
     """Split a ``#+property:`` value into its parts.
 
@@ -136,6 +147,7 @@ class OrgRoamConverter:
         properties: List[str] = None,
         add_created: bool = True,
         created_property: str = None,
+        add_modified: bool = True,
     ):
         self.source_dir = Path(source_dir).expanduser()
         self.target_dir = Path(target_dir)
@@ -143,6 +155,7 @@ class OrgRoamConverter:
         self.properties = properties or []
         self.add_created = add_created
         self.created_property = created_property
+        self.add_modified = add_modified
         # Output paths already written this run, so a second note claiming the
         # same name is noticed rather than silently replacing the first.
         self.written: Dict[Path, str] = {}
@@ -173,7 +186,9 @@ class OrgRoamConverter:
 
         return f"[{description or target}]({target})"
 
-    def convert_org_to_markdown(self, content: str, created_timestamp: str = None) -> str:
+    def convert_org_to_markdown(
+        self, content: str, created_timestamp: str = None, modified_timestamp: str = None
+    ) -> str:
         """Convert org-mode syntax to Markdown."""
         lines = content.split("\n")
         result = []
@@ -322,7 +337,7 @@ class OrgRoamConverter:
         # Add YAML frontmatter if title or properties are found
         markdown_content = "\n".join(result).strip()
 
-        if title or frontmatter_props or created_timestamp:
+        if title or frontmatter_props or created_timestamp or modified_timestamp:
             frontmatter = ["---"]
             if title:
                 frontmatter.append(f"title: {title}")
@@ -334,6 +349,8 @@ class OrgRoamConverter:
                     frontmatter.append(f"  - {title}")
             if created_timestamp:
                 frontmatter.append(f"created: {created_timestamp}")
+            if modified_timestamp:
+                frontmatter.append(f"modified: {modified_timestamp}")
             for prop_name, prop_values in frontmatter_props.items():
                 if len(prop_values) == 1:
                     # Single value: use scalar format
@@ -387,7 +404,13 @@ class OrgRoamConverter:
             if self.add_created:
                 created_timestamp = self.extract_created_timestamp(org_file, content)
 
-            markdown_content = self.convert_org_to_markdown(content, created_timestamp)
+            modified_timestamp = None
+            if self.add_modified:
+                modified_timestamp = modified_timestamp_of(org_file)
+
+            markdown_content = self.convert_org_to_markdown(
+                content, created_timestamp, modified_timestamp
+            )
 
             # The filename is what Obsidian resolves a [[wikilink]] against, and
             # the links carry titles, so the file is named after the title. The
@@ -516,6 +539,11 @@ def main():
         help="Disable adding created timestamp from filename",
     )
     parser.add_argument(
+        "--no-modified",
+        action="store_true",
+        help="Disable adding the modified timestamp from the org file's mtime",
+    )
+    parser.add_argument(
         "--created-property",
         type=str,
         help="Use a specific org-mode property for created timestamp instead of filename",
@@ -539,6 +567,7 @@ def main():
         args.properties,
         add_created=not args.no_created,
         created_property=args.created_property,
+        add_modified=not args.no_modified,
     )
     converter.convert_all()
 
