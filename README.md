@@ -115,6 +115,7 @@ Extract org-mode properties to frontmatter:
 - `-p, --properties`: org-mode properties to extract, for example `filetags` or `roam_refs`
 - `--no-created`: Disable adding created timestamp from filename
 - `--no-modified`: Disable adding the modified timestamp from the org file's mtime
+- `--keep-dead-links`: keep wikilinks whose target doesn't exist, instead of unwrapping them
 - `--publish-when`: mark a note for publishing when it carries this org property value, for example `category=public`
 - `--publish-key`: name of the frontmatter key that carries the flag (default: `publish`)
 - `--created-key`: one or more frontmatter keys for the created timestamp (default: `created`)
@@ -176,6 +177,24 @@ other, and passing several names writes the same timestamp under each:
 ```
 
 The defaults are `created` and `modified`, so output only changes if you ask for it.
+
+### Links that go nowhere
+
+A note can link to something that no longer exists, usually because the target was deleted, or the
+vault is a partial copy. Obsidian and Quartz both render those as unresolved, so the reader gets
+clickable text that leads nowhere.
+
+The converter unwraps them: `[[Gravity Falls]]` becomes `Gravity Falls`, keeping the words and
+dropping the link. The run says which notes were affected, so you can put the targets back if they
+were meant to exist:
+
+```text
+1 link points nowhere. The link syntax was removed and the words kept; --keep-dead-links leaves them:
+  A movie that takes place in an 80s mall.md: [[Gravity Falls]]
+```
+
+Pass `--keep-dead-links` to leave them alone. Links inside fenced code are never touched, since a
+JavaScript nested array reads as `[[x]]` and isn't a link.
 
 ### Publishing a subset
 
