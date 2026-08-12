@@ -1,5 +1,23 @@
 # Changelog
 
+## [3.6.0](https://github.com/alrayyes/org-roam-to-obsidian/compare/v3.5.0...v3.6.0) (2026-08-12)
+
+
+### Features
+
+* let the frontmatter date keys be configured ([#72](https://github.com/alrayyes/org-roam-to-obsidian/issues/72)) ([324c6c6](https://github.com/alrayyes/org-roam-to-obsidian/commit/324c6c6f24f42c74b436a059f374ff70dc2d57b0))
+* set a publish flag from an org property ([#76](https://github.com/alrayyes/org-roam-to-obsidian/issues/76)) ([c835388](https://github.com/alrayyes/org-roam-to-obsidian/commit/c8353887fb95bd013063277858a460ce8897d6f3))
+
+
+### Bug Fixes
+
+* keep footnotes nothing refers to ([#74](https://github.com/alrayyes/org-roam-to-obsidian/issues/74)) ([f36fe47](https://github.com/alrayyes/org-roam-to-obsidian/commit/f36fe47239f332eb18b2fbf627338a1371bfd730))
+
+
+### Documentation
+
+* remove changelog duplicates from 3.4.0 and 3.5.0 ([#69](https://github.com/alrayyes/org-roam-to-obsidian/issues/69)) ([07d7cf8](https://github.com/alrayyes/org-roam-to-obsidian/commit/07d7cf87ab657d12461a1c5f2c5bb0a3a03866df))
+
 ## [3.5.0](https://github.com/alrayyes/org-roam-to-obsidian/compare/v3.4.0...v3.5.0) (2026-08-12)
 
 
