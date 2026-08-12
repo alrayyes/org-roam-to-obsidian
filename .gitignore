@@ -13,3 +13,7 @@ bun.lockb
 
 # Output directory
 output/
+
+# Prettier and Biome only read the .gitignore at the repo root, not the one
+pytest writes inside its own cache, so this is what keeps them out of it.
+.pytest_cache/

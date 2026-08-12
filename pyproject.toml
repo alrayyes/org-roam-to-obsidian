@@ -6,6 +6,12 @@ readme = "README.md"
 requires-python = ">=3.8"
 license = {text = "GPL-3.0-or-later"}
 
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# convert.py is a top-level script rather than a package, so the repo root has
+# to be on the path for `import convert` to resolve.
+pythonpath = ["."]
+
 [tool.ruff]
 line-length = 100
 target-version = "py38"
