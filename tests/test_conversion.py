@@ -81,6 +81,25 @@ class TestLinks:
 
         assert markdown == "See [https://example.com](https://example.com)."
 
+    def test_link_inside_a_heading_is_converted(self, converter):
+        converter.id_to_title["abc-123"] = "Gitlab"
+
+        markdown = converter.convert_org_to_markdown("** [[id:abc-123][Gitlab]]")
+
+        assert markdown == "## [[Gitlab]]"
+
+    def test_link_surrounded_by_heading_text_is_converted(self, converter):
+        converter.id_to_title["abc-123"] = "promise"
+
+        markdown = converter.convert_org_to_markdown("** Fulfilling a [[id:abc-123][promise]]")
+
+        assert markdown == "## Fulfilling a [[promise]]"
+
+    def test_external_link_inside_a_heading_is_converted(self, converter):
+        markdown = converter.convert_org_to_markdown("* See [[https://example.com][the docs]]")
+
+        assert markdown == "# See [the docs](https://example.com)"
+
     def test_internal_anchor_link_becomes_an_inline_link(self, converter):
         markdown = converter.convert_org_to_markdown("See [[#intro][Intro]].")
 

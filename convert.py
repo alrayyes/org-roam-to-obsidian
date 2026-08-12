@@ -176,6 +176,10 @@ class OrgRoamConverter:
             if line.startswith("*") and not in_src_block:
                 level = len(line) - len(line.lstrip("*"))
                 header_text = line.lstrip("* ").strip()
+                # Heading text is prose like any other line, so it gets the same
+                # link substitution. Appending it raw is what left org syntax
+                # sitting in headings.
+                header_text = ORG_LINK.sub(self.convert_link, header_text)
                 result.append(f"{'#' * level} {header_text}")
                 continue
 
