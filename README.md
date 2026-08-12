@@ -115,6 +115,8 @@ Extract org-mode properties to frontmatter:
 - `-p, --properties`: org-mode properties to extract, for example `filetags` or `roam_refs`
 - `--no-created`: Disable adding created timestamp from filename
 - `--no-modified`: Disable adding the modified timestamp from the org file's mtime
+- `--publish-when`: mark a note for publishing when it carries this org property value, for example `category=public`
+- `--publish-key`: frontmatter key for the publish flag (default: `publish`)
 - `--created-key`: one or more frontmatter keys for the created timestamp (default: `created`)
 - `--modified-key`: one or more frontmatter keys for the modified timestamp (default: `modified`)
 - `--created-property`: Use a specific org-mode property for created timestamp instead of filename
@@ -174,6 +176,21 @@ other, and passing several names writes the same timestamp under each:
 ```
 
 The defaults are `created` and `modified`, so output only changes if you ask for it.
+
+### Publishing a subset
+
+If you publish part of the vault rather than all of it, `--publish-when` maps an org property onto
+the flag the exporter reads. Obsidian's Quartz exporter looks for `publish`:
+
+```bash
+./convert.py --publish-when category=public
+```
+
+A note carrying `#+category: public` gets `publish: true` in its frontmatter, and one that doesn't
+gets nothing at all rather than `publish: false`. Exporters treat a missing flag as unpublished, and
+writing it out for every other note would bury the ones you meant to publish. The property can hold
+several values, so `#+category: draft public` still matches. Use `--publish-key` if your setup wants
+a different name.
 
 ```yaml
 ---

@@ -413,6 +413,37 @@ def test_the_defaults_are_created_and_modified(tmp_path):
     assert "date:" not in written
 
 
+def test_publish_when_flags_only_matching_notes(tmp_path):
+    source = tmp_path / "slip-box"
+    source.mkdir()
+    (source / "20200101000000-a.org").write_text(
+        "#+title: Public\n#+category: public\n", encoding="utf-8"
+    )
+    (source / "20200202000000-b.org").write_text(
+        "#+title: Private\n#+category: draft\n", encoding="utf-8"
+    )
+    target = tmp_path / "out"
+
+    run_convert("-i", str(source), "-o", str(target), "--publish-when", "category=public")
+
+    assert "publish: true" in (target / "Public.md").read_text(encoding="utf-8")
+    assert "publish" not in (target / "Private.md").read_text(encoding="utf-8")
+
+
+def test_publish_when_needs_a_property_and_a_value(tmp_path):
+    import subprocess
+
+    result = subprocess.run(
+        [sys.executable, str(CONVERT), "--publish-when", "nonsense"],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode != 0
+    assert "PROPERTY=VALUE" in result.stderr
+
+
 def test_an_empty_source_directory_is_not_an_error(tmp_path):
     source = tmp_path / "empty"
     source.mkdir()

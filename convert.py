@@ -150,6 +150,8 @@ class OrgRoamConverter:
         add_modified: bool = True,
         created_keys: List[str] = None,
         modified_keys: List[str] = None,
+        publish_when: Tuple[str, str] = None,
+        publish_key: str = "publish",
     ):
         self.source_dir = Path(source_dir).expanduser()
         self.target_dir = Path(target_dir)
@@ -164,6 +166,12 @@ class OrgRoamConverter:
         # go out under several names rather than forcing a post-process.
         self.created_keys = created_keys or ["created"]
         self.modified_keys = modified_keys or ["modified"]
+        # (property, value) that marks a note for publishing, and the key to
+        # write it under. Notes that do not match get nothing rather than
+        # "false", because an exporter treats a missing flag as unpublished and
+        # writing it out would bury the ones that are.
+        self.publish_when = publish_when
+        self.publish_key = publish_key
         # Output paths already written this run, so a second note claiming the
         # same name is noticed rather than silently replacing the first.
         self.written: Dict[Path, str] = {}
@@ -205,6 +213,7 @@ class OrgRoamConverter:
         in_quote_block = False
         skip_toc = False
         heading_indices = []
+        publish = False
         title = None
         frontmatter_props = {}
 
@@ -225,6 +234,11 @@ class OrgRoamConverter:
             if line.lower().startswith("#+title:"):
                 title = line.split(":", 1)[1].strip()
                 continue
+
+            if self.publish_when:
+                prop, wanted = self.publish_when
+                if line.lower().startswith(f"#+{prop.lower()}:"):
+                    publish = wanted in parse_property_value(line.split(":", 1)[1].strip())
 
             # Extract configured properties (skip created_property if it's being used)
             for prop in self.properties:
@@ -345,7 +359,7 @@ class OrgRoamConverter:
         # Add YAML frontmatter if title or properties are found
         markdown_content = "\n".join(result).strip()
 
-        if title or frontmatter_props or created_timestamp or modified_timestamp:
+        if title or frontmatter_props or created_timestamp or modified_timestamp or publish:
             frontmatter = ["---"]
             if title:
                 frontmatter.append(f"title: {title}")
@@ -361,6 +375,8 @@ class OrgRoamConverter:
             if modified_timestamp:
                 for key in self.modified_keys:
                     frontmatter.append(f"{key}: {modified_timestamp}")
+            if publish:
+                frontmatter.append(f"{self.publish_key}: true")
             for prop_name, prop_values in frontmatter_props.items():
                 if len(prop_values) == 1:
                     # Single value: use scalar format
@@ -549,6 +565,18 @@ def main():
         help="Disable adding created timestamp from filename",
     )
     parser.add_argument(
+        "--publish-when",
+        metavar="PROPERTY=VALUE",
+        help="Mark a note for publishing when it carries this org property value, "
+        "for example category=public",
+    )
+    parser.add_argument(
+        "--publish-key",
+        default="publish",
+        metavar="KEY",
+        help="Frontmatter key for the publish flag (default: publish)",
+    )
+    parser.add_argument(
         "--created-key",
         nargs="+",
         default=["created"],
@@ -577,6 +605,13 @@ def main():
 
     args = parser.parse_args()
 
+    publish_when = None
+    if args.publish_when:
+        if "=" not in args.publish_when:
+            parser.error("--publish-when takes PROPERTY=VALUE, for example category=public")
+        prop, _, value = args.publish_when.partition("=")
+        publish_when = (prop.strip(), value.strip())
+
     print(f"Converting org-roam files from: {args.input}")
     print(f"Output directory: {args.output}")
     if args.properties:
@@ -596,6 +631,8 @@ def main():
         add_modified=not args.no_modified,
         created_keys=args.created_key,
         modified_keys=args.modified_key,
+        publish_when=publish_when,
+        publish_key=args.publish_key,
     )
     converter.convert_all()
 
