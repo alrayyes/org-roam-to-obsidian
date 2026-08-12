@@ -1,0 +1,6 @@
+# Prettier already reads .gitignore, so node_modules and output/ are covered.
+# This file is for tracked text Prettier should still keep its hands off.
+
+# Written by release-please from commit messages. The tool owns its layout, and
+# reformatting it here would show up as noise in the next release diff.
+CHANGELOG.md

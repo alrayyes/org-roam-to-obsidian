@@ -87,14 +87,28 @@ The suite runs on `pre-push`, and in CI against Python 3.8 and 3.14.
 This project uses [lefthook](https://github.com/evilmartians/lefthook) to manage git hooks:
 
 - **pre-commit**: Fixes staged files in place — `ruff format` and `ruff check --fix` on Python,
-  `markdownlint --fix` on Markdown, and `prettier --write` on YAML and JSON
+  `prettier --write` then `markdownlint-cli2 --fix` on Markdown, and `prettier --write` on YAML
+  and JSON
 - **commit-msg**: Validates commit messages with [commitlint](https://commitlint.js.org/) following [Conventional Commits](https://www.conventionalcommits.org/)
 - **pre-push**: Runs `pytest`, then re-runs all of the above across the whole repository in check
   mode, so nothing reaches the remote that CI would reject
 
-The hooks and the GitHub Actions workflows run the same commands deliberately. The hook is there
-to catch a problem early; CI is the gate that cannot be skipped. You can run the checks yourself
-with `bun run lint:md`, `bun run lint:yaml` and `bun run lint:json`.
+The hooks and the GitHub Actions workflows run the same commands on purpose. The hook catches a
+problem early; CI is the gate you can't skip. You can run the checks yourself with
+`bun run format:md`, `bun run lint:md`, `bun run lint:yaml` and `bun run lint:json`. Each one has
+a `:fix` counterpart that writes instead of complaining.
+
+Markdown gets two tools because they answer different questions. Prettier owns the layout, and
+it's the only thing here that aligns a table's pipes and pads its cells. markdownlint-cli2 then
+judges the structure of what Prettier produced: heading levels, list markers, dead links.
+
+The order matters, which is why both the hook and CI run Prettier first. The other way round,
+markdownlint spends its effort fixing something Prettier is about to overwrite. Where the two
+disagree about a character, the markdownlint rule comes off in `.markdownlint-cli2.jsonc` instead
+of being left to fight.
+
+Prettier runs with `proseWrap: "preserve"`, so it never reflows a paragraph you wrote. It leaves
+`CHANGELOG.md` alone too, because release-please owns that file.
 
 **Commit message format:**
 
