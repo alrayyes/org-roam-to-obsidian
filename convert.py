@@ -28,8 +28,8 @@ def extract_id_and_title(filepath: Path) -> Tuple[str, str]:
                 in_properties = False
             elif in_properties and line.startswith(":ID:"):
                 file_id = line.split(":ID:")[1].strip()
-            elif line.startswith("#+title:"):
-                title = line.split("#+title:")[1].strip()
+            elif line.lower().startswith("#+title:"):
+                title = line.split(":", 1)[1].strip()
 
             if file_id and title:
                 break
@@ -99,9 +99,11 @@ class OrgRoamConverter:
             elif in_properties_block:
                 continue
 
-            # Extract title
-            if line.startswith("#+title:"):
-                title = line.split("#+title:")[1].strip()
+            # Extract title. Org accepts either case and older files often use
+            # #+TITLE:, which used to fall through to the directive-drop rule and
+            # take the note's title with it.
+            if line.lower().startswith("#+title:"):
+                title = line.split(":", 1)[1].strip()
                 continue
 
             # Extract configured properties (skip created_property if it's being used)
