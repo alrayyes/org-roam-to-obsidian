@@ -119,11 +119,16 @@ class OrgRoamConverter:
                     frontmatter_props[prop] = parsed_values
                     break
 
+            # Org accepts either case for its directives, and org-insert-
+            # structure-template writes the lowercase form, so every #+ test
+            # below works on a folded copy of the line.
+            directive = line.lower()
+
             # Skip other org-mode directives
             if (
-                line.startswith("#+")
-                and not line.startswith("#+BEGIN")
-                and not line.startswith("#+END")
+                directive.startswith("#+")
+                and not directive.startswith("#+begin")
+                and not directive.startswith("#+end")
             ):
                 continue
 
@@ -133,16 +138,16 @@ class OrgRoamConverter:
                 continue
 
             # Convert code blocks
-            if line.startswith("#+BEGIN_SRC") or line.startswith("#+begin_src"):
+            if directive.startswith("#+begin_src"):
                 lang = line.split()[-1] if len(line.split()) > 1 else ""
                 result.append(f"```{lang}")
                 in_src_block = True
                 continue
-            elif line.startswith("#+END_SRC") or line.startswith("#+end_src"):
+            elif directive.startswith("#+end_src"):
                 result.append("```")
                 in_src_block = False
                 continue
-            elif line.startswith("#+RESULTS:") or line.startswith("#+results:"):
+            elif directive.startswith("#+results:"):
                 continue
 
             # Skip content in results blocks (lines starting with: after RESULTS)
