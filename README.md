@@ -301,12 +301,10 @@ By design:
 - Conversion is best-effort. Complex org-mode constructs may not survive intact.
 
 Not by design. The features listed at the top of this file describe what the converter is meant to
-do, and three of them don't work today. Each one has a test in the suite marked `xfail` and an open
+do, and two of them don't work today. Each one has a test in the suite marked `xfail` and an open
 issue:
 
 - A property value containing a colon gets split on it, turning `roam_refs: https://example.com`
   into a two-item list ([#17](https://github.com/alrayyes/org-roam-to-obsidian/issues/17)).
 - A Table of Contents loses its heading but keeps its entries
   ([#18](https://github.com/alrayyes/org-roam-to-obsidian/issues/18)).
-- Lowercase `#+begin_src` blocks, which is what modern org-mode writes, get discarded instead of
-  fenced ([#19](https://github.com/alrayyes/org-roam-to-obsidian/issues/19)).
