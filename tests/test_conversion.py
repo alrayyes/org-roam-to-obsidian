@@ -175,6 +175,33 @@ class TestLinks:
         assert markdown == "See [Intro](#intro)."
 
 
+class TestUnreferencedFootnotes:
+    def test_a_definition_nothing_refers_to_becomes_plain_text(self, converter):
+        """Markdown renders no footnote unless something references it."""
+        org = "* Footnotes\n[fn:doc]https://example.com"
+
+        markdown = converter.convert_org_to_markdown(org)
+
+        assert markdown == "# Footnotes\nhttps://example.com"
+
+    def test_a_referenced_definition_stays_a_footnote(self, converter):
+        org = "Body[fn:doc] text.\n\n[fn:doc]https://example.com"
+
+        markdown = converter.convert_org_to_markdown(org)
+
+        assert "Body[^doc] text." in markdown
+        assert "[^doc]: https://example.com" in markdown
+
+    def test_only_the_unreferenced_one_is_flattened(self, converter):
+        org = "Body[fn:used] text.\n\n[fn:used]used.\n[fn:spare]spare."
+
+        markdown = converter.convert_org_to_markdown(org)
+
+        assert "[^used]: used." in markdown
+        assert "[^spare]" not in markdown
+        assert "spare." in markdown
+
+
 class TestTables:
     def test_separator_row_becomes_the_markdown_form(self, converter):
         org = "| A | B |\n|---+---|\n| 1 | 2 |"
@@ -217,14 +244,14 @@ class TestFootnotes:
         assert converter.convert_org_to_markdown(org) == "A Promise[^footnote] is asynchronous."
 
     def test_definition_gains_the_colon_and_space_markdown_needs(self, converter):
-        org = "[fn:footnote]https://example.com"
+        org = "Body[fn:footnote].\n\n[fn:footnote]https://example.com"
 
-        assert converter.convert_org_to_markdown(org) == "[^footnote]: https://example.com"
+        assert converter.convert_org_to_markdown(org).endswith("[^footnote]: https://example.com")
 
     def test_definition_already_spaced_is_handled(self, converter):
-        org = "[fn:doc] See the manual."
+        org = "Body[fn:doc].\n\n[fn:doc] See the manual."
 
-        assert converter.convert_org_to_markdown(org) == "[^doc]: See the manual."
+        assert converter.convert_org_to_markdown(org).endswith("[^doc]: See the manual.")
 
     def test_hyphenated_labels_survive(self, converter):
         org = "Async[fn:async-functions] is new."
