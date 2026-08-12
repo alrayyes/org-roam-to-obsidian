@@ -17,13 +17,21 @@ pre-commit:
       glob: "*.md"
       run: bunx prettier --write {staged_files} && bunx markdownlint-cli2 --fix {staged_files}
       stage_fixed: true
+    # Style advice, reported and never fixed automatically. Skipped rather than
+    # failed when Vale is not installed, so a contributor without it can still
+    # commit; CI has the same check and cannot be skipped.
+    vale:
+      glob: "*.md"
+      run: vale {staged_files}
+      skip:
+        - run: "! command -v vale > /dev/null"
     prettier-yaml:
       glob: "*.{yml,yaml}"
       run: bunx prettier --write {staged_files}
       stage_fixed: true
-    prettier-json:
+    biome:
       glob: "*.{json,jsonc}"
-      run: bunx prettier --write {staged_files}
+      run: bunx biome check --write --no-errors-on-unmatched {staged_files}
       stage_fixed: true
 
 commit-msg:
@@ -44,7 +52,14 @@ pre-push:
       run: bun run format:md
     markdownlint:
       run: bun run lint:md
+    # LTeX is not here on purpose. It is a ~300 MB download that ships its own
+    # Java runtime, which is more than a push should wait on, so grammar is
+    # checked in CI and in the editor over LSP instead.
+    vale:
+      run: bun run lint:prose
+      skip:
+        - run: "! command -v vale > /dev/null"
     prettier-yaml:
       run: bun run lint:yaml
-    prettier-json:
+    biome:
       run: bun run lint:json
