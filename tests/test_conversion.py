@@ -33,11 +33,6 @@ class TestCodeBlocks:
 
         assert converter.convert_org_to_markdown(org) == "```python\nprint('hi')\n```"
 
-    @pytest.mark.xfail(
-        strict=True,
-        reason="the directive-skipping branch matches uppercase only and runs first, "
-        "https://github.com/alrayyes/org-roam-to-obsidian/issues/19",
-    )
     def test_lowercase_block_delimiters_are_recognised(self, converter):
         org = "#+begin_src sh\necho hi\n#+end_src"
 
@@ -45,6 +40,11 @@ class TestCodeBlocks:
 
     def test_asterisks_inside_a_block_are_not_read_as_headings(self, converter):
         org = "#+BEGIN_SRC text\n* not a heading\n#+END_SRC"
+
+        assert converter.convert_org_to_markdown(org) == "```text\n* not a heading\n```"
+
+    def test_asterisks_inside_a_lowercase_block_are_not_read_as_headings(self, converter):
+        org = "#+begin_src text\n* not a heading\n#+end_src"
 
         assert converter.convert_org_to_markdown(org) == "```text\n* not a heading\n```"
 
