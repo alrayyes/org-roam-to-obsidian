@@ -1,5 +1,19 @@
 # Changelog
 
+## [3.4.0](https://github.com/alrayyes/org-roam-to-obsidian/compare/v3.3.0...v3.4.0) (2026-08-12)
+
+
+### Features
+
+* report links that point nowhere ([9627edc](https://github.com/alrayyes/org-roam-to-obsidian/commit/9627edc315c66d094a7e2c38910e07b8fa051f55))
+* report links that point nowhere ([c58a00c](https://github.com/alrayyes/org-roam-to-obsidian/commit/c58a00cd4b8d9ed360f38c75f5273668a424eda8)), closes [#62](https://github.com/alrayyes/org-roam-to-obsidian/issues/62)
+
+
+### Documentation
+
+* remove duplicated changelog entries ([bf25e27](https://github.com/alrayyes/org-roam-to-obsidian/commit/bf25e271877ca2cb67d0fa3dec5d02c9ead1666b))
+* remove duplicated changelog entries ([fdffc59](https://github.com/alrayyes/org-roam-to-obsidian/commit/fdffc598b04642c7c28fda4c8b58e7516ea34174))
+
 ## [3.3.0](https://github.com/alrayyes/org-roam-to-obsidian/compare/v3.2.0...v3.3.0) (2026-08-12)
 
 
