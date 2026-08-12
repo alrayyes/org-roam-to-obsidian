@@ -162,10 +162,6 @@ By design:
 Not by design. Some of the features listed at the top of this file don't work today. Each one has
 a test in the suite marked `xfail` and an open issue:
 
-- ID links come out as `[Title](Title)` instead of `[[Title]]`, so a converted vault contains no
-  wikilinks at all ([#15](https://github.com/alrayyes/org-roam-to-obsidian/issues/15)).
-- Links carrying a URL scheme are left alone, so `[[https://example.com][Example]]` stays as
-  org-mode source ([#16](https://github.com/alrayyes/org-roam-to-obsidian/issues/16)).
 - A property value containing a colon gets split on it, turning `roam_refs: https://example.com`
   into a two-item list ([#17](https://github.com/alrayyes/org-roam-to-obsidian/issues/17)).
 - A Table of Contents loses its heading but keeps its entries
