@@ -14,6 +14,19 @@ from typing import Dict, List, Tuple
 ORG_LINK = re.compile(r"\[\[([^\]]+)](?:\[([^\]]+)])?]")
 
 
+def parse_property_value(value: str) -> List[str]:
+    """Split a ``#+property:`` value into its parts.
+
+    Org writes tags wrapped in colons, ``:one:two:``, and everything else
+    separated by whitespace. Splitting on every colon handles the first and
+    destroys the second, because a URL is full of them.
+    """
+    if len(value) > 1 and value.startswith(":") and value.endswith(":"):
+        return [tag for tag in value.split(":") if tag]
+
+    return value.split()
+
+
 def extract_id_and_title(filepath: Path) -> Tuple[str, str]:
     """Extract the ID and title from an org file."""
     file_id = None
@@ -111,14 +124,8 @@ class OrgRoamConverter:
                 if prop == self.created_property:
                     continue
                 if line.startswith(f"#+{prop}:"):
-                    prop_value = line.split(f"#+{prop}:")[1].strip()
-                    # Parse values - can be colon-separated like :tag1:tag2: or space-separated
-                    parsed_values = [
-                        val.strip().strip(":")
-                        for val in prop_value.replace(":", " ").split()
-                        if val.strip()
-                    ]
-                    frontmatter_props[prop] = parsed_values
+                    prop_value = line.split(f"#+{prop}:", 1)[1].strip()
+                    frontmatter_props[prop] = parse_property_value(prop_value)
                     break
 
             # Org accepts either case for its directives, and org-insert-
