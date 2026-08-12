@@ -152,6 +152,7 @@ class OrgRoamConverter:
         modified_keys: List[str] = None,
         publish_when: Tuple[str, str] = None,
         publish_key: str = "publish",
+        remove_dead_links: bool = True,
     ):
         self.source_dir = Path(source_dir).expanduser()
         self.target_dir = Path(target_dir)
@@ -172,6 +173,7 @@ class OrgRoamConverter:
         # writing it out would bury the ones that are.
         self.publish_when = publish_when
         self.publish_key = publish_key
+        self.remove_dead_links = remove_dead_links
         # Output paths already written this run, so a second note claiming the
         # same name is noticed rather than silently replacing the first.
         self.written: Dict[Path, str] = {}
@@ -516,6 +518,26 @@ class OrgRoamConverter:
 
         self.report_broken_links()
 
+    def strip_dead_links(self, broken_by_file: Dict[Path, List[str]]):
+        """Unwrap wikilinks whose target does not exist, keeping the words.
+
+        Runs once every note is written, because only then is the full set of
+        filenames and aliases known. Fenced code is skipped: a JavaScript
+        nested array reads as [[x]] and is not a link.
+        """
+        for path, targets in broken_by_file.items():
+            lines = path.read_text(encoding="utf-8").split("\n")
+            in_fence = False
+            for index, line in enumerate(lines):
+                if line.lstrip().startswith("```"):
+                    in_fence = not in_fence
+                    continue
+                if in_fence:
+                    continue
+                for target in targets:
+                    lines[index] = lines[index].replace(f"[[{target}]]", target)
+            path.write_text("\n".join(lines), encoding="utf-8")
+
     def report_broken_links(self):
         """Name every wikilink in the output that resolves to nothing.
 
@@ -529,19 +551,29 @@ class OrgRoamConverter:
                 resolvable.add(alias.strip())
 
         broken = []
+        by_file: Dict[Path, List[str]] = {}
         for path in sorted(self.written):
             for target in wikilinks_outside_code(path.read_text(encoding="utf-8")):
                 if target not in resolvable:
                     broken.append((path.name, target))
+                    by_file.setdefault(path, []).append(target)
 
         if not broken:
             return
+
+        if self.remove_dead_links:
+            self.strip_dead_links(by_file)
 
         if len(broken) == 1:
             heading = "1 link points nowhere"
         else:
             heading = f"{len(broken)} links point nowhere"
-        print(f"\n{heading}. Obsidian shows these as unresolved, so they are worth fixing:")
+        tail = (
+            "The link syntax was removed and the words kept; --keep-dead-links leaves them:"
+            if self.remove_dead_links
+            else "Obsidian shows these as unresolved, so they are worth fixing:"
+        )
+        print(f"\n{heading}. {tail}")
         for note, target in broken:
             print(f"  {note}: [[{target}]]")
 
@@ -573,6 +605,11 @@ def main():
         "--no-created",
         action="store_true",
         help="Disable adding created timestamp from filename",
+    )
+    parser.add_argument(
+        "--keep-dead-links",
+        action="store_true",
+        help="Keep wikilinks whose target does not exist, instead of unwrapping them",
     )
     parser.add_argument(
         "--publish-when",
@@ -643,6 +680,7 @@ def main():
         modified_keys=args.modified_key,
         publish_when=publish_when,
         publish_key=args.publish_key,
+        remove_dead_links=not args.keep_dead_links,
     )
     converter.convert_all()
 
