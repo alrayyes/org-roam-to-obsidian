@@ -58,7 +58,7 @@ def test_every_note_is_converted(vault):
 
     output = run_convert("-i", str(source), "-o", str(target))
 
-    assert "2/2 files converted successfully" in output
+    assert "2 files written from 2 notes" in output
 
 
 def test_timestamp_prefixes_are_stripped_from_filenames(vault):
@@ -130,10 +130,60 @@ def test_a_link_between_notes_becomes_a_wikilink(vault):
     assert "[[Second Note]]" in (target / "first_note.md").read_text(encoding="utf-8")
 
 
+def test_a_collision_warns_and_names_both_notes(tmp_path):
+    """Two notes whose filenames collapse to one must not vanish quietly."""
+    source = tmp_path / "slip-box"
+    source.mkdir()
+    (source / "20200101000000-arrays.org").write_text("#+title: Golang Arrays\n", encoding="utf-8")
+    (source / "20200202000000-arrays.org").write_text("#+title: Rust Arrays\n", encoding="utf-8")
+
+    output = run_convert("-i", str(source), "-o", str(tmp_path / "out"))
+
+    assert "Warning" in output
+    assert "20200101000000-arrays.org" in output
+    assert "20200202000000-arrays.org" in output
+
+
+def test_the_summary_counts_files_written_not_read(tmp_path):
+    source = tmp_path / "slip-box"
+    source.mkdir()
+    for stamp in ["20200101000000", "20200202000000"]:
+        (source / f"{stamp}-arrays.org").write_text("#+title: A\n", encoding="utf-8")
+
+    output = run_convert("-i", str(source), "-o", str(tmp_path / "out"))
+
+    assert "1 file written" in output
+    assert "2 notes" in output
+
+
+def test_files_written_matches_what_is_on_disk(tmp_path):
+    source = tmp_path / "slip-box"
+    source.mkdir()
+    for stamp in ["20200101000000", "20200202000000"]:
+        (source / f"{stamp}-arrays.org").write_text("#+title: A\n", encoding="utf-8")
+    target = tmp_path / "out"
+
+    run_convert("-i", str(source), "-o", str(target))
+
+    assert len(list(target.glob("*.md"))) == 1
+
+
+def test_a_clean_run_says_so_without_warnings(tmp_path):
+    source = tmp_path / "slip-box"
+    source.mkdir()
+    (source / "20200101000000-one.org").write_text("#+title: One\n", encoding="utf-8")
+    (source / "20200202000000-two.org").write_text("#+title: Two\n", encoding="utf-8")
+
+    output = run_convert("-i", str(source), "-o", str(tmp_path / "out"))
+
+    assert "Warning" not in output
+    assert "2 files written" in output
+
+
 def test_an_empty_source_directory_is_not_an_error(tmp_path):
     source = tmp_path / "empty"
     source.mkdir()
 
     output = run_convert("-i", str(source), "-o", str(tmp_path / "out"))
 
-    assert "0/0 files converted successfully" in output
+    assert "0 files written from 0 notes" in output

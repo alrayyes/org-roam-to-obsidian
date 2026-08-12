@@ -102,6 +102,10 @@ class OrgRoamConverter:
         self.properties = properties or []
         self.add_created = add_created
         self.created_property = created_property
+        # Output paths already written this run, so a second note claiming the
+        # same name is noticed rather than silently replacing the first.
+        self.written: Dict[Path, str] = {}
+        self.collisions = 0
 
     def build_id_map(self):
         """Build a mapping of IDs to titles from all org files."""
@@ -321,7 +325,12 @@ class OrgRoamConverter:
         return None
 
     def convert_file(self, org_file: Path) -> bool:
-        """Convert a single org file to Markdown."""
+        """Convert a single org file to Markdown.
+
+        Returns True when a file was written. A note whose output name is
+        already taken still overwrites, because losing the later note would be
+        no better, but it says so rather than doing it quietly.
+        """
         try:
             with open(org_file, encoding="utf-8") as f:
                 content = f.read()
@@ -341,9 +350,18 @@ class OrgRoamConverter:
 
             output_file = self.target_dir / f"{filename}.md"
 
+            previous = self.written.get(output_file)
+            if previous is not None:
+                print(
+                    f"Warning: {org_file.name} and {previous} both convert to "
+                    f"{output_file.name}. Overwriting."
+                )
+                self.collisions += 1
+
             with open(output_file, "w", encoding="utf-8") as f:
                 f.write(markdown_content)
 
+            self.written[output_file] = org_file.name
             print(f"Converted: {org_file.name} -> {output_file.name}")
             return True
 
@@ -362,15 +380,20 @@ class OrgRoamConverter:
         # Second pass: convert all files
         print("\nConverting files...")
         org_files = list(self.source_dir.glob("*.org"))
-        success_count = 0
 
         for org_file in org_files:
-            if self.convert_file(org_file):
-                success_count += 1
+            self.convert_file(org_file)
 
-        print(
-            f"\nConversion complete: {success_count}/{len(org_files)} files converted successfully"
+        # Counting notes read hides a collision entirely: nine of them can go
+        # missing while the summary still reports every file as converted.
+        written = len(self.written)
+        summary = (
+            f"\nConversion complete: {written} file{'' if written == 1 else 's'} written "
+            f"from {len(org_files)} note{'' if len(org_files) == 1 else 's'}"
         )
+        if self.collisions:
+            summary += f" ({self.collisions} lost to name collisions)"
+        print(summary)
 
 
 def main():
