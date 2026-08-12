@@ -13,6 +13,22 @@ from typing import Dict, List, Tuple
 # first closing bracket, which is what org itself allows.
 ORG_LINK = re.compile(r"\[\[([^\]]+)](?:\[([^\]]+)])?]")
 
+# Org and Markdown tables differ only in the separator row: org joins the dashes
+# with + where Markdown wants |. Everything else already lines up.
+ORG_TABLE_SEPARATOR = re.compile(r"^(\s*)\|[-+]+\|\s*$")
+
+
+def convert_table_separator(line: str) -> str:
+    """Turn an org table's separator row into the Markdown one.
+
+    Only the separator differs between the two dialects, so a row that isn't one
+    comes back untouched and the table's alignment survives.
+    """
+    if not ORG_TABLE_SEPARATOR.match(line):
+        return line
+
+    return line.replace("+", "|")
+
 
 def parse_property_value(value: str) -> List[str]:
     """Split a ``#+property:`` value into its parts.
@@ -212,7 +228,11 @@ class OrgRoamConverter:
                 result.append(f"{'#' * level} {header_text}")
                 continue
 
-            line = ORG_LINK.sub(self.convert_link, line)
+            # Inside a source block the text is code, so a line that looks like
+            # a table separator is left as the author wrote it.
+            if not in_src_block:
+                line = ORG_LINK.sub(self.convert_link, line)
+                line = convert_table_separator(line)
 
             result.append(line)
 
