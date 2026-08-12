@@ -27,18 +27,19 @@ class TestHeadings:
         assert converter.convert_org_to_markdown(org) == "# One\n## Two\n### Three"
 
     def test_headings_shift_down_when_a_title_takes_the_h1(self, converter):
+        """The renderer shows the title above the body, so content starts at H2."""
         org = "#+title: My Note\n\n* Overview\n** Detail"
 
         markdown = converter.convert_org_to_markdown(org)
 
-        assert markdown.endswith("# My Note\n\n## Overview\n### Detail")
+        assert markdown.endswith("## Overview\n### Detail")
 
     def test_only_one_h1_survives_a_titled_note(self, converter):
         org = "#+title: My Note\n\n* One\n* Two"
 
         markdown = converter.convert_org_to_markdown(org)
 
-        assert [line for line in markdown.split("\n") if line.startswith("# ")] == ["# My Note"]
+        assert [line for line in markdown.split("\n") if line.startswith("# ")] == []
 
     def test_the_sixth_level_does_not_overflow(self, converter):
         org = "#+title: My Note\n\n****** Deep"
@@ -273,7 +274,15 @@ class TestFootnotes:
 
 
 class TestFrontmatter:
-    def test_title_becomes_frontmatter_and_an_h1(self, converter):
+    def test_title_goes_in_the_frontmatter_only(self, converter):
+        """The renderer supplies the title; a body H1 would show it twice."""
+        markdown = converter.convert_org_to_markdown("#+title: My Note\n\nBody.")
+
+        assert markdown == "---\ntitle: My Note\n---\n\nBody."
+
+    def test_the_body_h1_can_be_asked_for(self, tmp_path):
+        converter = OrgRoamConverter(str(tmp_path), str(tmp_path), title_heading=True)
+
         markdown = converter.convert_org_to_markdown("#+title: My Note\n\nBody.")
 
         assert markdown == "---\ntitle: My Note\n---\n\n# My Note\n\nBody."
@@ -281,7 +290,7 @@ class TestFrontmatter:
     def test_uppercase_title_directive_is_recognised(self, converter):
         markdown = converter.convert_org_to_markdown("#+TITLE: My Note\n\nBody.")
 
-        assert markdown == "---\ntitle: My Note\n---\n\n# My Note\n\nBody."
+        assert markdown == "---\ntitle: My Note\n---\n\nBody."
 
     def test_a_document_without_metadata_gets_no_frontmatter(self, converter):
         assert converter.convert_org_to_markdown("Just body text.") == "Just body text."
