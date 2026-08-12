@@ -87,6 +87,41 @@ class TestLinks:
         assert markdown == "See [Intro](#intro)."
 
 
+class TestTables:
+    def test_separator_row_becomes_the_markdown_form(self, converter):
+        org = "| A | B |\n|---+---|\n| 1 | 2 |"
+
+        assert converter.convert_org_to_markdown(org) == "| A | B |\n|---|---|\n| 1 | 2 |"
+
+    def test_a_separator_without_pluses_is_left_alone(self, converter):
+        org = "| A | B |\n|---------|\n| 1 | 2 |"
+
+        assert converter.convert_org_to_markdown(org) == "| A | B |\n|---------|\n| 1 | 2 |"
+
+    def test_body_rows_are_untouched(self, converter):
+        org = "| Country | Share |\n|---------+-------|\n| USSR    |   57% |"
+
+        markdown = converter.convert_org_to_markdown(org)
+
+        assert markdown.endswith("| USSR    |   57% |")
+        assert "|---------|-------|" in markdown
+
+    def test_an_indented_table_is_converted(self, converter):
+        org = "Body.\n  | A | B |\n  |---+---|"
+
+        assert converter.convert_org_to_markdown(org) == "Body.\n  | A | B |\n  |---|---|"
+
+    def test_a_plus_in_prose_is_not_a_table(self, converter):
+        org = "Use a+b for the sum."
+
+        assert converter.convert_org_to_markdown(org) == "Use a+b for the sum."
+
+    def test_a_table_inside_a_code_block_is_left_alone(self, converter):
+        org = "#+begin_src text\n|---+---|\n#+end_src"
+
+        assert converter.convert_org_to_markdown(org) == "```text\n|---+---|\n```"
+
+
 class TestFrontmatter:
     def test_title_becomes_frontmatter_and_an_h1(self, converter):
         markdown = converter.convert_org_to_markdown("#+title: My Note\n\nBody.")
