@@ -1,5 +1,21 @@
 # Changelog
 
+## [3.1.3](https://github.com/alrayyes/org-roam-to-obsidian/compare/v3.1.2...v3.1.3) (2026-08-12)
+
+
+### Bug Fixes
+
+* convert each org link in a single pass ([1171b99](https://github.com/alrayyes/org-roam-to-obsidian/commit/1171b997ee42fcb0c3ff9187ffa9e18f8d36766b))
+* convert each org link in a single pass ([0973d8d](https://github.com/alrayyes/org-roam-to-obsidian/commit/0973d8dfef3ef9adbaaa6d4f57cc31447180dce7)), closes [#15](https://github.com/alrayyes/org-roam-to-obsidian/issues/15) [#16](https://github.com/alrayyes/org-roam-to-obsidian/issues/16)
+* recognise org directives in either case ([050d437](https://github.com/alrayyes/org-roam-to-obsidian/commit/050d437b0b999b6eb2de5448bee8e828cf2aff19))
+* recognise org directives in either case ([20b87c3](https://github.com/alrayyes/org-roam-to-obsidian/commit/20b87c37926788edbb431dac96d319763e34cbbf)), closes [#19](https://github.com/alrayyes/org-roam-to-obsidian/issues/19)
+
+
+### Documentation
+
+* move dev guide out of the README ([13ecbc8](https://github.com/alrayyes/org-roam-to-obsidian/commit/13ecbc8283ccd6030c4ce7c33b6a57afda629bad))
+* move dev guide out of the README ([b778073](https://github.com/alrayyes/org-roam-to-obsidian/commit/b778073e6eefca8db7dd9c9e700228617e75e5f9))
+
 ## [3.1.2](https://github.com/alrayyes/org-roam-to-obsidian/compare/v3.1.1...v3.1.2) (2026-08-12)
 
 
