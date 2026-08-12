@@ -35,3 +35,6 @@ ltex-cli-plus
 ltex-ls-plus
 harper-ls
 LanguageTool
+npm
+lockfile
+SQLite

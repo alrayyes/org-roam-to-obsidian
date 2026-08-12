@@ -1,5 +1,11 @@
 # org-roam to Obsidian converter
 
+[![Test](https://github.com/alrayyes/org-roam-to-obsidian/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/alrayyes/org-roam-to-obsidian/actions/workflows/test.yml)
+[![Lint](https://github.com/alrayyes/org-roam-to-obsidian/actions/workflows/lint.yml/badge.svg?branch=main)](https://github.com/alrayyes/org-roam-to-obsidian/actions/workflows/lint.yml)
+[![Prose](https://github.com/alrayyes/org-roam-to-obsidian/actions/workflows/prose.yml/badge.svg?branch=main)](https://github.com/alrayyes/org-roam-to-obsidian/actions/workflows/prose.yml)
+[![Release](https://img.shields.io/github/v/release/alrayyes/org-roam-to-obsidian)](https://github.com/alrayyes/org-roam-to-obsidian/releases)
+[![Licence](https://img.shields.io/github/license/alrayyes/org-roam-to-obsidian)](LICENSE)
+
 Convert your org-roam notes to Obsidian-compatible Markdown format.
 
 ## Features
@@ -14,15 +20,29 @@ Convert your org-roam notes to Obsidian-compatible Markdown format.
 
 ## Requirements
 
-- Python 3.8+
-- No external dependencies required (uses only the standard library)
+To run the converter you need **Python 3.8 or newer** and nothing else. `convert.py` imports only
+the standard library, so there's no `pip install` step and no virtual environment to create. It
+runs anywhere Python does. The paths in the examples are written for Linux and macOS.
+
+You also need a directory of org-roam `.org` files you can read, and somewhere to write Markdown
+to. The converter never opens the org-roam SQLite database, so Emacs doesn't have to be running,
+and the database doesn't have to be up-to-date.
+
+To work on the converter rather than just run it, you also need:
+
+- **[bun](https://bun.sh)** for the Node-shaped tooling: commitlint, Biome, Prettier and
+  markdownlint-cli2. Not npm. The lockfile is `bun.lock`.
+- **[lefthook](https://github.com/evilmartians/lefthook)** to install the git hooks.
+- **ruff** and **pytest**, both pinned in `requirements-dev.txt`.
+- **[Vale](https://vale.sh)**, optional. The hooks skip it when it isn't on your `PATH`, and CI
+  runs it either way.
 
 ## Installation
 
 Clone this repository:
 
 ```bash
-git clone https://github.com/yourusername/org-roam-to-obsidian.git
+git clone https://github.com/alrayyes/org-roam-to-obsidian.git
 cd org-roam-to-obsidian
 ```
 
@@ -86,9 +106,9 @@ The suite runs on `pre-push`, and in CI against Python 3.8 and 3.14.
 
 This project uses [lefthook](https://github.com/evilmartians/lefthook) to manage git hooks:
 
-- **pre-commit**: Fixes staged files in place — `ruff format` and `ruff check --fix` on Python,
-  `prettier --write` then `markdownlint-cli2 --fix` on Markdown, and `prettier --write` on YAML
-  and JSON
+- **pre-commit**: Fixes staged files in place. `ruff format` and `ruff check --fix` on Python,
+  `prettier --write` then `markdownlint-cli2 --fix` on Markdown, `prettier --write` on YAML, and
+  `biome check --write` on JSON
 - **commit-msg**: Validates commit messages with [commitlint](https://commitlint.js.org/) following [Conventional Commits](https://www.conventionalcommits.org/)
 - **pre-push**: Runs `pytest`, then re-runs all of the above across the whole repository in check
   mode, so nothing reaches the remote that CI would reject
@@ -109,6 +129,13 @@ of being left to fight.
 
 Prettier runs with `proseWrap: "preserve"`, so it never reflows a paragraph you wrote. It leaves
 `CHANGELOG.md` alone too, because release-please owns that file.
+
+JSON belongs to [Biome](https://biomejs.dev), not Prettier. Biome leads on every file type it
+supports, and Prettier is only here to fill the gaps it leaves. Today those gaps are Markdown and
+YAML. `.prettierignore` lists the extensions Biome owns, so nobody later reads Prettier's presence
+as permission to hand it the JavaScript, and the day Biome ships a YAML formatter that list grows
+by one line. `biome.json` turns on comments and trailing commas for the parser, because
+`.markdownlint-cli2.jsonc` uses both, and it skips `bun.lock`.
 
 #### Prose
 
@@ -263,8 +290,27 @@ This project is licensed under the GNU General Public License v3.0 - see the [LI
 
 Contributions are welcome. Open a pull request.
 
-## Known Limitations
+## Known limitations
 
-- Does not require or use the org-roam database
-- Assumes standard org-roam file structure
-- Best effort conversion - complex org-mode features may not convert perfectly
+By design:
+
+- The org-roam database is neither required nor read. Everything is worked out from the `.org`
+  files themselves.
+- A standard org-roam file layout is assumed: one directory of `.org` files, each carrying its
+  own `:ID:` inside a `:PROPERTIES:` block.
+- Conversion is best-effort. Complex org-mode constructs may not survive intact.
+
+Not by design. The features listed at the top of this file describe what the converter is meant to
+do, and five of them don't work today. Each one has a test in the suite marked `xfail` and an open
+issue:
+
+- ID links come out as `[Title](Title)` instead of `[[Title]]`, so a converted vault contains no
+  wikilinks at all ([#15](https://github.com/alrayyes/org-roam-to-obsidian/issues/15)).
+- Links carrying a URL scheme are left alone, so `[[https://example.com][Example]]` stays as
+  org-mode source ([#16](https://github.com/alrayyes/org-roam-to-obsidian/issues/16)).
+- A property value containing a colon gets split on it, turning `roam_refs: https://example.com`
+  into a two-item list ([#17](https://github.com/alrayyes/org-roam-to-obsidian/issues/17)).
+- A Table of Contents loses its heading but keeps its entries
+  ([#18](https://github.com/alrayyes/org-roam-to-obsidian/issues/18)).
+- Lowercase `#+begin_src` blocks, which is what modern org-mode writes, get discarded instead of
+  fenced ([#19](https://github.com/alrayyes/org-roam-to-obsidian/issues/19)).
