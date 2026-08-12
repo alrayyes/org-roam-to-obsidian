@@ -13,6 +13,27 @@ from typing import Dict, List, Tuple
 # first closing bracket, which is what org itself allows.
 ORG_LINK = re.compile(r"\[\[([^\]]+)](?:\[([^\]]+)])?]")
 
+# Org footnotes are [fn:label], both where they are referenced and where they
+# are defined. A definition starts its line; anything else is a reference.
+ORG_FOOTNOTE_DEFINITION = re.compile(r"^\[fn:([^\]]+)]\s*")
+ORG_FOOTNOTE_REFERENCE = re.compile(r"\[fn:([^\]]+)]")
+
+
+def convert_footnotes(line: str) -> str:
+    """Rewrite org footnotes as the Markdown form Obsidian understands.
+
+    A definition sits at the start of its line and needs the colon and space
+    Markdown wants; org writes the text hard against the bracket. Everything
+    else is a reference and only loses the ``fn:``.
+    """
+    definition = ORG_FOOTNOTE_DEFINITION.match(line)
+    if definition:
+        rest = line[definition.end() :]
+        return f"[^{definition.group(1)}]: {rest}"
+
+    return ORG_FOOTNOTE_REFERENCE.sub(r"[^\1]", line)
+
+
 # Org and Markdown tables differ only in the separator row: org joins the dashes
 # with + where Markdown wants |. Everything else already lines up.
 ORG_TABLE_SEPARATOR = re.compile(r"^(\s*)\|[-+]+\|\s*$")
@@ -201,6 +222,7 @@ class OrgRoamConverter:
                 # A blank line still needs the marker, or the quote ends there and
                 # the rest becomes an ordinary paragraph.
                 quoted = ORG_LINK.sub(self.convert_link, line)
+                quoted = convert_footnotes(quoted)
                 result.append(f"> {quoted}" if quoted.strip() else ">")
                 continue
 
@@ -222,16 +244,18 @@ class OrgRoamConverter:
                 level = len(line) - len(line.lstrip("*"))
                 header_text = line.lstrip("* ").strip()
                 # Heading text is prose like any other line, so it gets the same
-                # link substitution. Appending it raw is what left org syntax
+                # substitutions. Appending it raw is what left org syntax
                 # sitting in headings.
                 header_text = ORG_LINK.sub(self.convert_link, header_text)
+                header_text = convert_footnotes(header_text)
                 result.append(f"{'#' * level} {header_text}")
                 continue
 
-            # Inside a source block the text is code, so a line that looks like
-            # a table separator is left as the author wrote it.
+            # Inside a source block the text is code, not prose, so links,
+            # footnotes and table separators are left as the author wrote them.
             if not in_src_block:
                 line = ORG_LINK.sub(self.convert_link, line)
+                line = convert_footnotes(line)
                 line = convert_table_separator(line)
 
             result.append(line)

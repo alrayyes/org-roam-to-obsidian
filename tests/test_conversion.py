@@ -189,6 +189,41 @@ class TestTables:
         assert converter.convert_org_to_markdown(org) == "```text\n|---+---|\n```"
 
 
+class TestFootnotes:
+    def test_inline_reference_becomes_a_markdown_footnote(self, converter):
+        org = "A Promise[fn:footnote] is asynchronous."
+
+        assert converter.convert_org_to_markdown(org) == "A Promise[^footnote] is asynchronous."
+
+    def test_definition_gains_the_colon_and_space_markdown_needs(self, converter):
+        org = "[fn:footnote]https://example.com"
+
+        assert converter.convert_org_to_markdown(org) == "[^footnote]: https://example.com"
+
+    def test_definition_already_spaced_is_handled(self, converter):
+        org = "[fn:doc] See the manual."
+
+        assert converter.convert_org_to_markdown(org) == "[^doc]: See the manual."
+
+    def test_hyphenated_labels_survive(self, converter):
+        org = "Async[fn:async-functions] is new."
+
+        assert converter.convert_org_to_markdown(org) == "Async[^async-functions] is new."
+
+    def test_footnote_inside_a_heading_is_converted(self, converter):
+        assert converter.convert_org_to_markdown("* British[fn:british]") == "# British[^british]"
+
+    def test_footnotes_inside_a_code_block_are_left_alone(self, converter):
+        org = "#+begin_src text\nliteral[fn:x] text\n#+end_src"
+
+        assert converter.convert_org_to_markdown(org) == "```text\nliteral[fn:x] text\n```"
+
+    def test_a_reference_and_its_definition_convert_together(self, converter):
+        org = "Body[fn:a] text.\n\n[fn:a]The note."
+
+        assert converter.convert_org_to_markdown(org) == "Body[^a] text.\n\n[^a]: The note."
+
+
 class TestFrontmatter:
     def test_title_becomes_frontmatter_and_an_h1(self, converter):
         markdown = converter.convert_org_to_markdown("#+title: My Note\n\nBody.")
