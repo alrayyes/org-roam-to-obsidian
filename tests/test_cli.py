@@ -372,6 +372,47 @@ def test_no_modified_flag_leaves_it_out(tmp_path):
     assert "modified:" not in (target / "JS.md").read_text(encoding="utf-8")
 
 
+def test_date_keys_can_be_set_from_the_command_line(tmp_path):
+    source = tmp_path / "slip-box"
+    source.mkdir()
+    (source / "20200826142641-golang.org").write_text("#+title: Golang\n", encoding="utf-8")
+    target = tmp_path / "out"
+
+    run_convert(
+        "-i",
+        str(source),
+        "-o",
+        str(target),
+        "--created-key",
+        "created",
+        "created_at",
+        "date",
+        "--modified-key",
+        "modified",
+        "lastmod",
+    )
+
+    written = (target / "Golang.md").read_text(encoding="utf-8")
+    assert "created: 2020-08-26T14:26:41" in written
+    assert "created_at: 2020-08-26T14:26:41" in written
+    assert "date: 2020-08-26T14:26:41" in written
+    assert "lastmod: " in written
+
+
+def test_the_defaults_are_created_and_modified(tmp_path):
+    source = tmp_path / "slip-box"
+    source.mkdir()
+    (source / "20200826142641-golang.org").write_text("#+title: Golang\n", encoding="utf-8")
+    target = tmp_path / "out"
+
+    run_convert("-i", str(source), "-o", str(target))
+
+    written = (target / "Golang.md").read_text(encoding="utf-8")
+    assert "created: 2020-08-26T14:26:41" in written
+    assert "modified: " in written
+    assert "date:" not in written
+
+
 def test_an_empty_source_directory_is_not_an_error(tmp_path):
     source = tmp_path / "empty"
     source.mkdir()

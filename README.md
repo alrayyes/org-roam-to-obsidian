@@ -115,6 +115,8 @@ Extract org-mode properties to frontmatter:
 - `-p, --properties`: org-mode properties to extract, for example `filetags` or `roam_refs`
 - `--no-created`: Disable adding created timestamp from filename
 - `--no-modified`: Disable adding the modified timestamp from the org file's mtime
+- `--created-key`: one or more frontmatter keys for the created timestamp (default: `created`)
+- `--modified-key`: one or more frontmatter keys for the modified timestamp (default: `modified`)
 - `--created-property`: Use a specific org-mode property for created timestamp instead of filename
 - `-h, --help`: Show help message
 
@@ -162,6 +164,16 @@ falls back to git or the filesystem, which means the date it shows is the day yo
 page ends up stamped with the same date. Which of the two a page displays is your generator's choice:
 Quartz picks it with `defaultDateType`, where `modified` shows the last edit and `created` shows the
 org-roam creation date.
+
+Generators disagree about what to call those keys, so you can set them. Quartz reads `created`,
+`created_at` or `date` for one and `modified`, `lastmod`, `updated` or `last-modified` for the
+other, and passing several names writes the same timestamp under each:
+
+```bash
+./convert.py --created-key created date --modified-key modified lastmod
+```
+
+The defaults are `created` and `modified`, so output only changes if you ask for it.
 
 ```yaml
 ---

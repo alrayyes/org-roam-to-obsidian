@@ -148,6 +148,8 @@ class OrgRoamConverter:
         add_created: bool = True,
         created_property: str = None,
         add_modified: bool = True,
+        created_keys: List[str] = None,
+        modified_keys: List[str] = None,
     ):
         self.source_dir = Path(source_dir).expanduser()
         self.target_dir = Path(target_dir)
@@ -156,6 +158,12 @@ class OrgRoamConverter:
         self.add_created = add_created
         self.created_property = created_property
         self.add_modified = add_modified
+        # Which frontmatter names carry the timestamps. Generators disagree:
+        # Quartz reads created, created_at or date for one and modified,
+        # lastmod, updated or last-modified for the other, so the same value can
+        # go out under several names rather than forcing a post-process.
+        self.created_keys = created_keys or ["created"]
+        self.modified_keys = modified_keys or ["modified"]
         # Output paths already written this run, so a second note claiming the
         # same name is noticed rather than silently replacing the first.
         self.written: Dict[Path, str] = {}
@@ -348,9 +356,11 @@ class OrgRoamConverter:
                     frontmatter.append("aliases:")
                     frontmatter.append(f"  - {title}")
             if created_timestamp:
-                frontmatter.append(f"created: {created_timestamp}")
+                for key in self.created_keys:
+                    frontmatter.append(f"{key}: {created_timestamp}")
             if modified_timestamp:
-                frontmatter.append(f"modified: {modified_timestamp}")
+                for key in self.modified_keys:
+                    frontmatter.append(f"{key}: {modified_timestamp}")
             for prop_name, prop_values in frontmatter_props.items():
                 if len(prop_values) == 1:
                     # Single value: use scalar format
@@ -539,6 +549,22 @@ def main():
         help="Disable adding created timestamp from filename",
     )
     parser.add_argument(
+        "--created-key",
+        nargs="+",
+        default=["created"],
+        metavar="KEY",
+        help="One or more frontmatter keys for the created timestamp (default: created). "
+        "Quartz also reads created_at and date",
+    )
+    parser.add_argument(
+        "--modified-key",
+        nargs="+",
+        default=["modified"],
+        metavar="KEY",
+        help="One or more frontmatter keys for the modified timestamp (default: modified). "
+        "Quartz also reads lastmod, updated and last-modified",
+    )
+    parser.add_argument(
         "--no-modified",
         action="store_true",
         help="Disable adding the modified timestamp from the org file's mtime",
@@ -568,6 +594,8 @@ def main():
         add_created=not args.no_created,
         created_property=args.created_property,
         add_modified=not args.no_modified,
+        created_keys=args.created_key,
+        modified_keys=args.modified_key,
     )
     converter.convert_all()
 
