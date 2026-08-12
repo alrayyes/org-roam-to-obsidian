@@ -32,7 +32,8 @@
       "Vale",
       "npm",
       "lockfile",
-      "SQLite"
+      "SQLite",
+      "org-roam-to-obsidian"
     ]
   },
   "ltex.disabledRules": {

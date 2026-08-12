@@ -72,4 +72,4 @@ jobs:
           # LTeX is compiled for 21, so it dies with UnsupportedClassVersionError
           # unless we clear it. Nothing else in this job wants Java.
           JAVA_HOME: ""
-        run: ltex-cli-plus --client-configuration=.ltex.json README.md docs/development.md
+        run: ltex-cli-plus --client-configuration=.ltex.json README.md docs/development.md CLAUDE.md
