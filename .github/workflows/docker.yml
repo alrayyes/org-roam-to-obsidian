@@ -88,7 +88,9 @@ jobs:
           # container cannot write to the mount.
           docker run --rm --user "$(id -u):$(id -g)" \
             -v /tmp/in:/input:ro -v /tmp/out:/output smoke:test
-          test -f /tmp/out/smoke.md || { echo "no output written"; exit 1; }
-          grep -q '^title: Smoke' /tmp/out/smoke.md || { echo "no title in frontmatter"; exit 1; }
-          grep -q '^## Heading' /tmp/out/smoke.md || { echo "heading not shifted below the title"; exit 1; }
+          # Named after the title, not the org filename, which is what makes
+          # a [[wikilink]] resolve in Obsidian.
+          test -f "/tmp/out/Smoke.md" || { echo "no output written"; ls -la /tmp/out; exit 1; }
+          grep -q '^title: Smoke' "/tmp/out/Smoke.md" || { echo "no title in frontmatter"; exit 1; }
+          grep -q '^## Heading' "/tmp/out/Smoke.md" || { echo "heading not shifted below the title"; exit 1; }
           echo "image converts correctly"

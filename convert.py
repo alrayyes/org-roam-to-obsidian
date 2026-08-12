@@ -51,6 +51,25 @@ def convert_table_separator(line: str) -> str:
     return line.replace("+", "|")
 
 
+# Characters no common filesystem accepts in a name, and which Obsidian also
+# refuses. A title carrying one keeps it as an alias so links still resolve.
+UNSAFE_IN_FILENAME = re.compile(r'[\\/:*?"<>|]+')
+
+
+def safe_filename(title: str) -> str:
+    """Turn a note title into something a filesystem will accept.
+
+    Obsidian resolves a wikilink by filename, so the file wants to be named
+    after the title. Where the title contains a character a filename cannot,
+    the caller keeps the original as an alias.
+    """
+    cleaned = UNSAFE_IN_FILENAME.sub(" ", title)
+    # A slash usually separates words, so the space it leaves reads better with
+    # a dash between them than as a double gap.
+    cleaned = re.sub(r"\s+-\s+|\s{2,}", " - " if " / " in title else " ", cleaned)
+    return re.sub(r"\s+", " ", cleaned).strip(" .")
+
+
 def parse_property_value(value: str) -> List[str]:
     """Split a ``#+property:`` value into its parts.
 
@@ -285,6 +304,12 @@ class OrgRoamConverter:
             frontmatter = ["---"]
             if title:
                 frontmatter.append(f"title: {title}")
+                # The file is named after the title, so when the title contains
+                # something a filename cannot, the original goes in as an alias
+                # or every [[wikilink]] pointing here stops resolving.
+                if safe_filename(title) != title:
+                    frontmatter.append("aliases:")
+                    frontmatter.append(f"  - {title}")
             if created_timestamp:
                 frontmatter.append(f"created: {created_timestamp}")
             for prop_name, prop_values in frontmatter_props.items():
@@ -342,21 +367,30 @@ class OrgRoamConverter:
 
             markdown_content = self.convert_org_to_markdown(content, created_timestamp)
 
-            # Create the output filename (remove timestamp prefix, change extension)
-            filename = org_file.stem
-            # Remove the timestamp prefix (20YYMMDDHHMMSS-)
-            if re.match(r"^\d{14}-", filename):
-                filename = filename[15:]
+            # The filename is what Obsidian resolves a [[wikilink]] against, and
+            # the links carry titles, so the file is named after the title. The
+            # org filename is the fallback for a note that has no title.
+            fallback = org_file.stem
+            if re.match(r"^\d{14}-", fallback):
+                fallback = fallback[15:]
+
+            _, title = extract_id_and_title(org_file)
+            filename = safe_filename(title) if title else fallback
+            if not filename:
+                filename = fallback
 
             output_file = self.target_dir / f"{filename}.md"
 
-            previous = self.written.get(output_file)
-            if previous is not None:
+            if output_file in self.written:
+                # Two notes genuinely share a title. Keeping the org filename for
+                # the second loses neither, which overwriting would.
+                alternative = self.target_dir / f"{fallback}.md"
                 print(
-                    f"Warning: {org_file.name} and {previous} both convert to "
-                    f"{output_file.name}. Overwriting."
+                    f"Warning: {org_file.name} and {self.written[output_file]} both convert to "
+                    f"{output_file.name}. Writing {alternative.name} instead."
                 )
                 self.collisions += 1
+                output_file = alternative
 
             with open(output_file, "w", encoding="utf-8") as f:
                 f.write(markdown_content)
@@ -379,7 +413,10 @@ class OrgRoamConverter:
 
         # Second pass: convert all files
         print("\nConverting files...")
-        org_files = list(self.source_dir.glob("*.org"))
+        # Sorted so a rerun produces the same vault. Glob order is filesystem
+        # order, which decides who wins a title clash and would otherwise make
+        # two runs over the same notes differ.
+        org_files = sorted(self.source_dir.glob("*.org"))
 
         for org_file in org_files:
             self.convert_file(org_file)
@@ -392,7 +429,8 @@ class OrgRoamConverter:
             f"from {len(org_files)} note{'' if len(org_files) == 1 else 's'}"
         )
         if self.collisions:
-            summary += f" ({self.collisions} lost to name collisions)"
+            plural = "" if self.collisions == 1 else "s"
+            summary += f" ({self.collisions} name collision{plural}, kept under the org filename)"
         print(summary)
 
 

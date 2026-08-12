@@ -66,7 +66,7 @@ def test_timestamp_prefixes_are_stripped_from_filenames(vault):
 
     run_convert("-i", str(source), "-o", str(target))
 
-    assert sorted(p.name for p in target.iterdir()) == ["first_note.md", "second_note.md"]
+    assert sorted(p.name for p in target.iterdir()) == ["First Note.md", "Second Note.md"]
 
 
 def test_the_output_directory_is_created_if_missing(vault):
@@ -84,7 +84,7 @@ def test_a_note_carries_its_title_and_created_date(vault):
     run_convert("-i", str(source), "-o", str(target))
 
     assert (
-        (target / "second_note.md")
+        (target / "Second Note.md")
         .read_text(encoding="utf-8")
         .startswith("---\ntitle: Second Note\ncreated: 2021-01-01T12:00:00\n---\n\n# Second Note\n")
     )
@@ -95,7 +95,7 @@ def test_created_dates_are_omitted_when_disabled(vault):
 
     run_convert("-i", str(source), "-o", str(target), "--no-created")
 
-    assert "created:" not in (target / "second_note.md").read_text(encoding="utf-8")
+    assert "created:" not in (target / "Second Note.md").read_text(encoding="utf-8")
 
 
 def test_only_requested_properties_reach_the_frontmatter(vault):
@@ -103,7 +103,7 @@ def test_only_requested_properties_reach_the_frontmatter(vault):
 
     run_convert("-i", str(source), "-o", str(target), "-p", "filetags")
 
-    assert "filetags:\n  - python\n  - notes" in (target / "first_note.md").read_text(
+    assert "filetags:\n  - python\n  - notes" in (target / "First Note.md").read_text(
         encoding="utf-8"
     )
 
@@ -119,7 +119,7 @@ def test_a_custom_property_can_supply_the_created_date(tmp_path):
 
     run_convert("-i", str(source), "-o", str(target), "--created-property", "date_created")
 
-    assert "created: 2019-05-04T09:00:00" in (target / "dated.md").read_text(encoding="utf-8")
+    assert "created: 2019-05-04T09:00:00" in (target / "Dated.md").read_text(encoding="utf-8")
 
 
 def test_a_link_between_notes_becomes_a_wikilink(vault):
@@ -127,45 +127,48 @@ def test_a_link_between_notes_becomes_a_wikilink(vault):
 
     run_convert("-i", str(source), "-o", str(target))
 
-    assert "[[Second Note]]" in (target / "first_note.md").read_text(encoding="utf-8")
+    assert "[[Second Note]]" in (target / "First Note.md").read_text(encoding="utf-8")
 
 
 def test_a_collision_warns_and_names_both_notes(tmp_path):
     """Two notes whose filenames collapse to one must not vanish quietly."""
     source = tmp_path / "slip-box"
     source.mkdir()
-    (source / "20200101000000-arrays.org").write_text("#+title: Golang Arrays\n", encoding="utf-8")
-    (source / "20200202000000-arrays.org").write_text("#+title: Rust Arrays\n", encoding="utf-8")
+    (source / "20200101000000-a.org").write_text("#+title: Arrays\n", encoding="utf-8")
+    (source / "20200202000000-b.org").write_text("#+title: Arrays\n", encoding="utf-8")
 
     output = run_convert("-i", str(source), "-o", str(tmp_path / "out"))
 
     assert "Warning" in output
-    assert "20200101000000-arrays.org" in output
-    assert "20200202000000-arrays.org" in output
+    assert "20200101000000-a.org" in output
+    assert "20200202000000-b.org" in output
 
 
 def test_the_summary_counts_files_written_not_read(tmp_path):
     source = tmp_path / "slip-box"
     source.mkdir()
-    for stamp in ["20200101000000", "20200202000000"]:
-        (source / f"{stamp}-arrays.org").write_text("#+title: A\n", encoding="utf-8")
+    (source / "20200101000000-a.org").write_text("#+title: Same\n", encoding="utf-8")
+    (source / "20200202000000-b.org").write_text("#+title: Same\n", encoding="utf-8")
 
     output = run_convert("-i", str(source), "-o", str(tmp_path / "out"))
 
-    assert "1 file written" in output
-    assert "2 notes" in output
+    assert "2 files written from 2 notes" in output
+    assert "1 name collision" in output
 
 
-def test_files_written_matches_what_is_on_disk(tmp_path):
+def test_a_title_clash_keeps_both_notes(tmp_path):
     source = tmp_path / "slip-box"
     source.mkdir()
-    for stamp in ["20200101000000", "20200202000000"]:
-        (source / f"{stamp}-arrays.org").write_text("#+title: A\n", encoding="utf-8")
+    (source / "20200101000000-a.org").write_text("#+title: Same\n", encoding="utf-8")
+    (source / "20200202000000-b.org").write_text("#+title: Same\n", encoding="utf-8")
     target = tmp_path / "out"
 
     run_convert("-i", str(source), "-o", str(target))
 
-    assert len(list(target.glob("*.md"))) == 1
+    # Neither note is lost: the second keeps the name its org file had. Files
+    # are processed in sorted order, so a.org claims the title and b.org falls
+    # back, the same way on every run.
+    assert sorted(f.name for f in target.glob("*.md")) == ["Same.md", "b.md"]
 
 
 def test_a_clean_run_says_so_without_warnings(tmp_path):
@@ -178,6 +181,96 @@ def test_a_clean_run_says_so_without_warnings(tmp_path):
 
     assert "Warning" not in output
     assert "2 files written" in output
+
+
+def _note(source, stamp, title, body="Body.\n"):
+    (source / f"{stamp}-slug.org").write_text(f"#+title: {title}\n\n{body}", encoding="utf-8")
+
+
+def test_a_note_is_named_after_its_title(tmp_path):
+    source = tmp_path / "slip-box"
+    source.mkdir()
+    _note(source, "20200101000000", "JavaScript Arrays")
+    target = tmp_path / "out"
+
+    run_convert("-i", str(source), "-o", str(target))
+
+    assert (target / "JavaScript Arrays.md").is_file()
+
+
+def test_a_title_the_filesystem_rejects_is_made_safe(tmp_path):
+    source = tmp_path / "slip-box"
+    source.mkdir()
+    _note(source, "20200101000000", "Binding / Variables in JavaScript")
+    target = tmp_path / "out"
+
+    run_convert("-i", str(source), "-o", str(target))
+
+    assert (target / "Binding - Variables in JavaScript.md").is_file()
+
+
+def test_a_sanitised_name_keeps_the_title_as_an_alias(tmp_path):
+    source = tmp_path / "slip-box"
+    source.mkdir()
+    _note(source, "20200101000000", "Box<T>")
+    target = tmp_path / "out"
+
+    run_convert("-i", str(source), "-o", str(target))
+
+    written = (target / "Box T.md").read_text(encoding="utf-8")
+    assert "aliases:\n  - Box<T>" in written
+
+
+def test_an_untouched_title_gets_no_alias(tmp_path):
+    source = tmp_path / "slip-box"
+    source.mkdir()
+    _note(source, "20200101000000", "Plain Title")
+    target = tmp_path / "out"
+
+    run_convert("-i", str(source), "-o", str(target))
+
+    assert "aliases" not in (target / "Plain Title.md").read_text(encoding="utf-8")
+
+
+def test_a_note_without_a_title_falls_back_to_its_filename(tmp_path):
+    source = tmp_path / "slip-box"
+    source.mkdir()
+    (source / "20200101000000-no_title.org").write_text("Body only.\n", encoding="utf-8")
+    target = tmp_path / "out"
+
+    run_convert("-i", str(source), "-o", str(target))
+
+    assert (target / "no_title.md").is_file()
+
+
+def test_two_notes_sharing_a_title_both_survive(tmp_path):
+    source = tmp_path / "slip-box"
+    source.mkdir()
+    (source / "20200101000000-a.org").write_text("#+title: TypeScript\n", encoding="utf-8")
+    (source / "20200202000000-b.org").write_text("#+title: TypeScript\n", encoding="utf-8")
+    target = tmp_path / "out"
+
+    output = run_convert("-i", str(source), "-o", str(target))
+
+    assert len(list(target.glob("*.md"))) == 2
+    assert "Warning" in output
+
+
+def test_links_resolve_to_the_files_that_are_written(tmp_path):
+    source = tmp_path / "slip-box"
+    source.mkdir()
+    (source / "20200101000000-a.org").write_text(
+        ":PROPERTIES:\n:ID:       aaa\n:END:\n#+title: Target Note\n", encoding="utf-8"
+    )
+    (source / "20200202000000-b.org").write_text(
+        "#+title: Source Note\n\nSee [[id:aaa][x]].\n", encoding="utf-8"
+    )
+    target = tmp_path / "out"
+
+    run_convert("-i", str(source), "-o", str(target))
+
+    assert "[[Target Note]]" in (target / "Source Note.md").read_text(encoding="utf-8")
+    assert (target / "Target Note.md").is_file()
 
 
 def test_an_empty_source_directory_is_not_an_error(tmp_path):
