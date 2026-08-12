@@ -70,6 +70,28 @@ def safe_filename(title: str) -> str:
     return re.sub(r"\s+", " ", cleaned).strip(" .")
 
 
+# A wikilink in the generated Markdown. Obsidian also accepts [[target|label]]
+# and [[target#heading]], so only the part before either is the target.
+WIKILINK = re.compile(r"\[\[([^\]|#]+)")
+
+
+def wikilinks_outside_code(markdown: str) -> List[str]:
+    """Every wikilink target in a converted note, ignoring fenced code.
+
+    A JavaScript nested array reads as ``[[x]]`` and is not a link, so scanning
+    the whole file would report code samples as broken links.
+    """
+    targets = []
+    in_fence = False
+    for line in markdown.split("\n"):
+        if line.lstrip().startswith("```"):
+            in_fence = not in_fence
+            continue
+        if not in_fence:
+            targets.extend(match.group(1).strip() for match in WIKILINK.finditer(line))
+    return targets
+
+
 def parse_property_value(value: str) -> List[str]:
     """Split a ``#+property:`` value into its parts.
 
@@ -432,6 +454,37 @@ class OrgRoamConverter:
             plural = "" if self.collisions == 1 else "s"
             summary += f" ({self.collisions} name collision{plural}, kept under the org filename)"
         print(summary)
+
+        self.report_broken_links()
+
+    def report_broken_links(self):
+        """Name every wikilink in the output that resolves to nothing.
+
+        Checked against what was actually written rather than against the notes
+        that were read, because the filename is what Obsidian resolves against.
+        A note reached only through an alias counts as resolvable.
+        """
+        resolvable = {path.stem for path in self.written}
+        for path in self.written:
+            for alias in re.findall(r"^  - (.+)$", path.read_text(encoding="utf-8"), re.M):
+                resolvable.add(alias.strip())
+
+        broken = []
+        for path in sorted(self.written):
+            for target in wikilinks_outside_code(path.read_text(encoding="utf-8")):
+                if target not in resolvable:
+                    broken.append((path.name, target))
+
+        if not broken:
+            return
+
+        if len(broken) == 1:
+            heading = "1 link points nowhere"
+        else:
+            heading = f"{len(broken)} links point nowhere"
+        print(f"\n{heading}. Obsidian shows these as unresolved, so they are worth fixing:")
+        for note, target in broken:
+            print(f"  {note}: [[{target}]]")
 
 
 def main():

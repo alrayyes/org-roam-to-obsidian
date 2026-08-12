@@ -273,6 +273,76 @@ def test_links_resolve_to_the_files_that_are_written(tmp_path):
     assert (target / "Target Note.md").is_file()
 
 
+def test_a_wikilink_pointing_nowhere_is_reported(tmp_path):
+    """The point of the report: what to go and fix once the run is done."""
+    source = tmp_path / "slip-box"
+    source.mkdir()
+    (source / "20200101000000-a.org").write_text(
+        "#+title: Source Note\n\nSee [[id:missing-id][Gravity Falls]].\n", encoding="utf-8"
+    )
+
+    output = run_convert("-i", str(source), "-o", str(tmp_path / "out"))
+
+    assert "Source Note.md" in output
+    assert "[[Gravity Falls]]" in output
+
+
+def test_a_resolvable_link_is_not_reported(tmp_path):
+    source = tmp_path / "slip-box"
+    source.mkdir()
+    (source / "20200101000000-a.org").write_text(
+        ":PROPERTIES:\n:ID:       aaa\n:END:\n#+title: Target\n", encoding="utf-8"
+    )
+    (source / "20200202000000-b.org").write_text(
+        "#+title: Source\n\nSee [[id:aaa][x]].\n", encoding="utf-8"
+    )
+
+    output = run_convert("-i", str(source), "-o", str(tmp_path / "out"))
+
+    assert "point nowhere" not in output
+
+
+def test_a_link_resolved_by_an_alias_is_not_reported(tmp_path):
+    """The file is named Box T.md but the link says [[Box<T>]]; the alias covers it."""
+    source = tmp_path / "slip-box"
+    source.mkdir()
+    (source / "20200101000000-a.org").write_text(
+        ":PROPERTIES:\n:ID:       aaa\n:END:\n#+title: Box<T>\n", encoding="utf-8"
+    )
+    (source / "20200202000000-b.org").write_text(
+        "#+title: Source\n\nSee [[id:aaa][x]].\n", encoding="utf-8"
+    )
+
+    output = run_convert("-i", str(source), "-o", str(tmp_path / "out"))
+
+    assert "point nowhere" not in output
+
+
+def test_a_link_inside_a_code_block_is_not_reported(tmp_path):
+    """[[x]] in a JavaScript array is not a link and must not be flagged."""
+    source = tmp_path / "slip-box"
+    source.mkdir()
+    (source / "20200101000000-a.org").write_text(
+        "#+title: Code\n\n#+begin_src js\nflatMap((x) => [[x]])\n#+end_src\n", encoding="utf-8"
+    )
+
+    output = run_convert("-i", str(source), "-o", str(tmp_path / "out"))
+
+    assert "point nowhere" not in output
+
+
+def test_the_report_counts_every_broken_link(tmp_path):
+    source = tmp_path / "slip-box"
+    source.mkdir()
+    (source / "20200101000000-a.org").write_text(
+        "#+title: A\n\n[[id:gone][One]] and [[id:alsogone][Two]].\n", encoding="utf-8"
+    )
+
+    output = run_convert("-i", str(source), "-o", str(tmp_path / "out"))
+
+    assert "2 links point nowhere" in output
+
+
 def test_an_empty_source_directory_is_not_an_error(tmp_path):
     source = tmp_path / "empty"
     source.mkdir()
