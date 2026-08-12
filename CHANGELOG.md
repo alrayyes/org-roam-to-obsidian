@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.5.0](https://github.com/alrayyes/org-roam-to-obsidian/compare/v3.4.0...v3.5.0) (2026-08-12)
+
+
+### Features
+
+* add a modified timestamp to the frontmatter ([659f501](https://github.com/alrayyes/org-roam-to-obsidian/commit/659f50168c463ca7fd5a358470c6f24d3ff0471e))
+* add a modified timestamp to the frontmatter ([2b41bb0](https://github.com/alrayyes/org-roam-to-obsidian/commit/2b41bb0f97e28712ccb5a76aa768bb32c1efd4d6)), closes [#66](https://github.com/alrayyes/org-roam-to-obsidian/issues/66)
+
 ## [3.4.0](https://github.com/alrayyes/org-roam-to-obsidian/compare/v3.3.0...v3.4.0) (2026-08-12)
 
 
