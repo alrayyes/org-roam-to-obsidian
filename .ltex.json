@@ -29,7 +29,10 @@
       "harper-ls",
       "LTeX",
       "LanguageTool",
-      "Vale"
+      "Vale",
+      "npm",
+      "lockfile",
+      "SQLite"
     ]
   },
   "ltex.disabledRules": {
