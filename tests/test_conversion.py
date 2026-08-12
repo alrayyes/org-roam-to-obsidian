@@ -149,11 +149,6 @@ class TestRemovedContent:
 
         assert "Table of Contents" not in converter.convert_org_to_markdown(org)
 
-    @pytest.mark.xfail(
-        strict=True,
-        reason="only headings are skipped inside a TOC section, "
-        "https://github.com/alrayyes/org-roam-to-obsidian/issues/18",
-    )
     def test_toc_entries_are_dropped(self, converter):
         org = (
             "* Table of Contents :TOC_2:noexport:\n"
@@ -163,6 +158,24 @@ class TestRemovedContent:
             "* Intro\n"
             "Body."
         )
+
+        assert converter.convert_org_to_markdown(org) == "# Intro\nBody."
+
+    def test_a_toc_section_ends_at_the_next_top_level_heading(self, converter):
+        org = (
+            "* Table of Contents :TOC_2:noexport:\n"
+            "- [[#intro][Intro]]\n"
+            "\n"
+            "* Intro\n"
+            "Body.\n"
+            "** Detail\n"
+            "More."
+        )
+
+        assert converter.convert_org_to_markdown(org) == "# Intro\nBody.\n## Detail\nMore."
+
+    def test_content_before_a_toc_survives(self, converter):
+        org = "* Intro\nBody.\n* Contents :TOC_2:noexport:\n- [[#intro][Intro]]"
 
         assert converter.convert_org_to_markdown(org) == "# Intro\nBody."
 

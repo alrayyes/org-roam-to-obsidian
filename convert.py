@@ -154,15 +154,17 @@ class OrgRoamConverter:
             if not in_src_block and line.startswith(": "):
                 continue
 
+            # Everything under a TOC heading belongs to the table of contents,
+            # not just the sub-headings. The section runs until the next
+            # top-level heading, which is where org itself ends it.
+            if skip_toc:
+                if line.startswith("*") and not line.startswith("**"):
+                    skip_toc = False
+                else:
+                    continue
+
             # Convert headers
             if line.startswith("*") and not in_src_block:
-                # Check if this is a TOC line that should be skipped
-                if skip_toc:
-                    if line.startswith("*") and not line.startswith("**"):
-                        skip_toc = False
-                    else:
-                        continue
-
                 level = len(line) - len(line.lstrip("*"))
                 header_text = line.lstrip("* ").strip()
                 result.append(f"{'#' * level} {header_text}")
