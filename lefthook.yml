@@ -9,17 +9,29 @@ pre-commit:
       glob: "*.py"
       run: .venv/bin/ruff check --fix {staged_files}
       stage_fixed: true
-    markdownlint:
+    # Prettier decides the layout and markdownlint then judges what Prettier
+    # produced. Run them the other way round and markdownlint spends its time
+    # fixing something Prettier is about to overwrite, so these two share one
+    # command rather than racing each other in the parallel group.
+    markdown:
       glob: "*.md"
-      run: bunx markdownlint --fix {staged_files}
+      run: bunx prettier --write {staged_files} && bunx markdownlint-cli2 --fix {staged_files}
       stage_fixed: true
+    # Style advice, reported and never fixed automatically. Skipped rather than
+    # failed when Vale is not installed, so a contributor without it can still
+    # commit; CI has the same check and cannot be skipped.
+    vale:
+      glob: "*.md"
+      run: vale {staged_files}
+      skip:
+        - run: "! command -v vale > /dev/null"
     prettier-yaml:
       glob: "*.{yml,yaml}"
       run: bunx prettier --write {staged_files}
       stage_fixed: true
-    prettier-json:
-      glob: "*.json"
-      run: bunx prettier --write {staged_files}
+    biome:
+      glob: "*.{json,jsonc}"
+      run: bunx biome check --write --no-errors-on-unmatched {staged_files}
       stage_fixed: true
 
 commit-msg:
@@ -36,9 +48,18 @@ pre-push:
       run: .venv/bin/ruff format --check .
     ruff-check:
       run: .venv/bin/ruff check .
+    prettier-md:
+      run: bun run format:md
     markdownlint:
-      run: bunx markdownlint '**/*.md' --ignore node_modules --ignore output --ignore CHANGELOG.md
+      run: bun run lint:md
+    # LTeX is not here on purpose. It is a ~300 MB download that ships its own
+    # Java runtime, which is more than a push should wait on, so grammar is
+    # checked in CI and in the editor over LSP instead.
+    vale:
+      run: bun run lint:prose
+      skip:
+        - run: "! command -v vale > /dev/null"
     prettier-yaml:
-      run: bunx prettier --check '**/*.{yml,yaml}' --ignore-path .gitignore
-    prettier-json:
-      run: bunx prettier --check '**/*.json' --ignore-path .gitignore
+      run: bun run lint:yaml
+    biome:
+      run: bun run lint:json
