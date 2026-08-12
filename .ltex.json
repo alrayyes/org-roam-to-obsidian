@@ -1,0 +1,41 @@
+{
+  "ltex.language": "en-GB",
+  "ltex.dictionary": {
+    "en-GB": [
+      "Obsidian",
+      "org-mode",
+      "org-roam",
+      "frontmatter",
+      "wikilink",
+      "wikilinks",
+      "filetags",
+      "roam_refs",
+      "bun",
+      "bunx",
+      "lefthook",
+      "commitlint",
+      "markdownlint",
+      "ruff",
+      "pytest",
+      "xfail",
+      "xfails",
+      "Dependabot",
+      "release-please",
+      "subprocess",
+      "subprocesses",
+      "proselint",
+      "ltex-cli-plus",
+      "ltex-ls-plus",
+      "harper-ls",
+      "LTeX",
+      "LanguageTool",
+      "Vale",
+      "npm",
+      "lockfile",
+      "SQLite"
+    ]
+  },
+  "ltex.disabledRules": {
+    "en-GB": ["PASSIVE_VOICE", "UPPERCASE_SENTENCE_START", "LICENCE_LICENSE_NOUN_SINGULAR"]
+  }
+}

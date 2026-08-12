@@ -1,4 +1,10 @@
-# Org-Roam to Obsidian Converter
+# org-roam to Obsidian converter
+
+[![Test](https://github.com/alrayyes/org-roam-to-obsidian/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/alrayyes/org-roam-to-obsidian/actions/workflows/test.yml)
+[![Lint](https://github.com/alrayyes/org-roam-to-obsidian/actions/workflows/lint.yml/badge.svg?branch=main)](https://github.com/alrayyes/org-roam-to-obsidian/actions/workflows/lint.yml)
+[![Prose](https://github.com/alrayyes/org-roam-to-obsidian/actions/workflows/prose.yml/badge.svg?branch=main)](https://github.com/alrayyes/org-roam-to-obsidian/actions/workflows/prose.yml)
+[![Release](https://img.shields.io/github/v/release/alrayyes/org-roam-to-obsidian)](https://github.com/alrayyes/org-roam-to-obsidian/releases)
+[![Licence](https://img.shields.io/github/license/alrayyes/org-roam-to-obsidian)](LICENSE)
 
 Convert your org-roam notes to Obsidian-compatible Markdown format.
 
@@ -14,15 +20,29 @@ Convert your org-roam notes to Obsidian-compatible Markdown format.
 
 ## Requirements
 
-- Python 3.8+
-- No external dependencies required (uses only the standard library)
+To run the converter you need **Python 3.8 or newer** and nothing else. `convert.py` imports only
+the standard library, so there's no `pip install` step and no virtual environment to create. It
+runs anywhere Python does. The paths in the examples are written for Linux and macOS.
+
+You also need a directory of org-roam `.org` files you can read, and somewhere to write Markdown
+to. The converter never opens the org-roam SQLite database, so Emacs doesn't have to be running,
+and the database doesn't have to be up-to-date.
+
+To work on the converter rather than just run it, you also need:
+
+- **[bun](https://bun.sh)** for the Node-shaped tooling: commitlint, Biome, Prettier and
+  markdownlint-cli2. Not npm. The lockfile is `bun.lock`.
+- **[lefthook](https://github.com/evilmartians/lefthook)** to install the git hooks.
+- **ruff** and **pytest**, both pinned in `requirements-dev.txt`.
+- **[Vale](https://vale.sh)**, optional. The hooks skip it when it isn't on your `PATH`, and CI
+  runs it either way.
 
 ## Installation
 
 Clone this repository:
 
 ```bash
-git clone https://github.com/yourusername/org-roam-to-obsidian.git
+git clone https://github.com/alrayyes/org-roam-to-obsidian.git
 cd org-roam-to-obsidian
 ```
 
@@ -86,9 +106,9 @@ The suite runs on `pre-push`, and in CI against Python 3.8 and 3.14.
 
 This project uses [lefthook](https://github.com/evilmartians/lefthook) to manage git hooks:
 
-- **pre-commit**: Fixes staged files in place — `ruff format` and `ruff check --fix` on Python,
-  `prettier --write` then `markdownlint-cli2 --fix` on Markdown, and `prettier --write` on YAML
-  and JSON
+- **pre-commit**: Fixes staged files in place. `ruff format` and `ruff check --fix` on Python,
+  `prettier --write` then `markdownlint-cli2 --fix` on Markdown, `prettier --write` on YAML, and
+  `biome check --write` on JSON
 - **commit-msg**: Validates commit messages with [commitlint](https://commitlint.js.org/) following [Conventional Commits](https://www.conventionalcommits.org/)
 - **pre-push**: Runs `pytest`, then re-runs all of the above across the whole repository in check
   mode, so nothing reaches the remote that CI would reject
@@ -109,6 +129,52 @@ of being left to fight.
 
 Prettier runs with `proseWrap: "preserve"`, so it never reflows a paragraph you wrote. It leaves
 `CHANGELOG.md` alone too, because release-please owns that file.
+
+JSON belongs to [Biome](https://biomejs.dev), not Prettier. Biome leads on every file type it
+supports, and Prettier is only here to fill the gaps it leaves. Today those gaps are Markdown and
+YAML. `.prettierignore` lists the extensions Biome owns, so nobody later reads Prettier's presence
+as permission to hand it the JavaScript, and the day Biome ships a YAML formatter that list grows
+by one line. `biome.json` turns on comments and trailing commas for the parser, because
+`.markdownlint-cli2.jsonc` uses both, and it skips `bun.lock`.
+
+#### Prose
+
+Layout and structure are one thing. Whether the prose reads well is another, and two more tools
+cover that. They check different things, so they're deployed alongside each other rather than one
+instead of the other.
+
+[Vale](https://vale.sh) checks style: house voice, weasel words, corporate speak. It uses the
+Google and proselint packages, which `vale sync` downloads rather than the repo committing them.
+So install Vale (`yay -S vale` on Arch, `brew install vale` on macOS) and run `vale sync` once
+before `bun run lint:prose` will work. The git hooks run Vale when it's on your `PATH` and quietly
+skip it when it isn't. CI runs it either way and reports rather than blocks, because a merge
+stopped by an opinion teaches people to reach for `--no-verify`.
+
+[ltex-cli-plus](https://github.com/ltex-plus/ltex-ls-plus) checks mechanics: grammar, spelling and
+punctuation, by wrapping LanguageTool. This one does fail the build, because mechanics have a
+right answer. It stays out of the git hooks, since it's a ~300 MB download shipping its own Java
+runtime and that's more than a commit should wait on. Run the same engine in your editor over LSP
+(`ltex-ls-plus`, or `harper-ls` if you want something lighter) and CI becomes the fallback instead
+of the first time you hear about a typo.
+
+`styles/House/` holds the rules no published style guide covers. `Filler.yml` catches the
+vocabulary that says nothing, and `EmDash.yml` complains when a paragraph leans on more than one
+em-dash where a full stop would do.
+
+Where the two tools overlap, the rule comes off on one side. `PASSIVE_VOICE` is disabled in
+`.ltex.json` because Vale's styles already flag it. A few others are off for reasons worth
+recording, since a JSON config file can't say so itself:
+
+- `UPPERCASE_SENTENCE_START`, because this README opens with `# org-roam to Obsidian converter`
+  and org-roam is spelled lowercase.
+- `LICENCE_LICENSE_NOUN_SINGULAR`, because the prose is British English but the GNU General Public
+  License and the `LICENSE` file are named with an s, and neither is ours to respell.
+- `Google.Spelling`, for the same British-English reason in the other direction.
+- `Google.EmDash`, which wants em-dashes closed up. The house style spaces them.
+
+Project vocabulary lives in two places, one per tool: `styles/config/vocabularies/House/accept.txt`
+for Vale, and `ltex.dictionary` in `.ltex.json` for LTeX. Add new jargon to both. Vale's copy also
+pins the casing, because `Vale.Terms` is on: spell a product name any other way and it says so.
 
 **Commit message format:**
 
@@ -154,7 +220,7 @@ Extract org-mode properties to frontmatter:
 
 - `-i, --input`: Input directory containing org-roam files (default: `~/Documents/slip-box`)
 - `-o, --output`: Output directory for Markdown files (default: `./output`)
-- `-p, --properties`: Org-mode properties to extract (e.g., `filetags`, `roam_refs`)
+- `-p, --properties`: org-mode properties to extract, for example `filetags` or `roam_refs`
 - `--no-created`: Disable adding created timestamp from filename
 - `--created-property`: Use a specific org-mode property for created timestamp instead of filename
 - `-h, --help`: Show help message
@@ -180,7 +246,7 @@ Extract org-mode properties to frontmatter:
 
 ## What Gets Converted
 
-### Org-mode to Markdown
+### org-mode to Markdown
 
 - Headers: `* Header` → `# Header`
 - Code blocks: `#+BEGIN_SRC lang` → ` ```lang `
@@ -188,7 +254,7 @@ Extract org-mode properties to frontmatter:
 - External links: `[[url][text]]` → `[text](url)`
 - Properties: `#+filetags: :tag1:tag2:` → YAML frontmatter
 
-### Frontmatter Generation
+### Generating frontmatter
 
 When properties are extracted with `-p`, they are added to YAML frontmatter. Properties with a single value use the scalar format, while properties with multiple values use the array format.
 
@@ -214,7 +280,7 @@ roam_refs: https://example.com
 - Property directives (converted to frontmatter if specified with `-p`)
 - `#+RESULTS:` blocks
 - Table of Contents (`:TOC_:` sections)
-- Timestamp filename prefixes (e.g., `20200613170532-` → removed)
+- Timestamp filename prefixes, for example `20200613170532-`
 
 ## License
 
@@ -222,10 +288,25 @@ This project is licensed under the GNU General Public License v3.0 - see the [LI
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions are welcome. Open a pull request.
 
-## Known Limitations
+## Known limitations
 
-- Does not require or use the org-roam database
-- Assumes standard org-roam file structure
-- Best effort conversion - complex org-mode features may not convert perfectly
+By design:
+
+- The org-roam database is neither required nor read. Everything is worked out from the `.org`
+  files themselves.
+- A standard org-roam file layout is assumed: one directory of `.org` files, each carrying its
+  own `:ID:` inside a `:PROPERTIES:` block.
+- Conversion is best-effort. Complex org-mode constructs may not survive intact.
+
+Not by design. The features listed at the top of this file describe what the converter is meant to
+do, and three of them don't work today. Each one has a test in the suite marked `xfail` and an open
+issue:
+
+- A property value containing a colon gets split on it, turning `roam_refs: https://example.com`
+  into a two-item list ([#17](https://github.com/alrayyes/org-roam-to-obsidian/issues/17)).
+- A Table of Contents loses its heading but keeps its entries
+  ([#18](https://github.com/alrayyes/org-roam-to-obsidian/issues/18)).
+- Lowercase `#+begin_src` blocks, which is what modern org-mode writes, get discarded instead of
+  fenced ([#19](https://github.com/alrayyes/org-roam-to-obsidian/issues/19)).

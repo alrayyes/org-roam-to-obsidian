@@ -17,3 +17,7 @@ output/
 # Prettier and Biome only read the .gitignore at the repo root, not the one
 pytest writes inside its own cache, so this is what keeps them out of it.
 .pytest_cache/
+
+# Vale style packages, fetched by `vale sync`. styles/config/ is ours and stays.
+styles/Google/
+styles/proselint/
