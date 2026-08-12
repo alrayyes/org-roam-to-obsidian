@@ -1,5 +1,11 @@
 # org-roam to Obsidian converter
 
+[![Test](https://github.com/alrayyes/org-roam-to-obsidian/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/alrayyes/org-roam-to-obsidian/actions/workflows/test.yml)
+[![Lint](https://github.com/alrayyes/org-roam-to-obsidian/actions/workflows/lint.yml/badge.svg?branch=main)](https://github.com/alrayyes/org-roam-to-obsidian/actions/workflows/lint.yml)
+[![Prose](https://github.com/alrayyes/org-roam-to-obsidian/actions/workflows/prose.yml/badge.svg?branch=main)](https://github.com/alrayyes/org-roam-to-obsidian/actions/workflows/prose.yml)
+[![Release](https://img.shields.io/github/v/release/alrayyes/org-roam-to-obsidian)](https://github.com/alrayyes/org-roam-to-obsidian/releases)
+[![Licence](https://img.shields.io/github/license/alrayyes/org-roam-to-obsidian)](LICENSE)
+
 Convert your org-roam notes to Obsidian-compatible Markdown format.
 
 ## Features
