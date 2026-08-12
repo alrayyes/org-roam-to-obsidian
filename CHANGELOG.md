@@ -1,5 +1,29 @@
 # Changelog
 
+## [3.3.0](https://github.com/alrayyes/org-roam-to-obsidian/compare/v3.2.0...v3.3.0) (2026-08-12)
+
+
+### Features
+
+* name files after the note title ([f552b17](https://github.com/alrayyes/org-roam-to-obsidian/commit/f552b17c310294d4f935cedaf380e5c0e96450d3))
+* name files after the note title ([6d68bdd](https://github.com/alrayyes/org-roam-to-obsidian/commit/6d68bddb55016d909c83598d947f75f5999b1a4c)), closes [#29](https://github.com/alrayyes/org-roam-to-obsidian/issues/29)
+* publish a Docker image to ghcr ([2308230](https://github.com/alrayyes/org-roam-to-obsidian/commit/23082302bf04cf82cf7a873dbe33814acfa0a0f5))
+* publish a Docker image to ghcr ([3a5b5e9](https://github.com/alrayyes/org-roam-to-obsidian/commit/3a5b5e96e227d17ff4242a6caa7615903cc2cb49))
+
+
+### Bug Fixes
+
+* let the image write as the invoking user ([8a1c01a](https://github.com/alrayyes/org-roam-to-obsidian/commit/8a1c01a169905f1b5c4b0defe86cc87ed17c3a9f))
+* make the image build on arm64 ([90b21cc](https://github.com/alrayyes/org-roam-to-obsidian/commit/90b21cc7c246197b3b5e319341fba214605370d9))
+* report collisions instead of losing notes quietly ([e93ac67](https://github.com/alrayyes/org-roam-to-obsidian/commit/e93ac677eacd550bee973f69e3fc0bb41b6038ac))
+* report collisions instead of losing notes quietly ([1bd10f1](https://github.com/alrayyes/org-roam-to-obsidian/commit/1bd10f1be9006cf3d2731a3e67568446a51bca44))
+
+
+### Documentation
+
+* require a vault run after merging ([3bc69ed](https://github.com/alrayyes/org-roam-to-obsidian/commit/3bc69ed735f71b6e4b2308f559c1c4155c8fc42d))
+* require a vault run after merging ([53304fd](https://github.com/alrayyes/org-roam-to-obsidian/commit/53304fdd411e2ecc112943b957ba2b6dc6448c1d))
+
 ## [3.2.0](https://github.com/alrayyes/org-roam-to-obsidian/compare/v3.1.3...v3.2.0) (2026-08-12)
 
 
