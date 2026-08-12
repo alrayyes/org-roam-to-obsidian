@@ -1,5 +1,31 @@
 # Changelog
 
+## [3.2.0](https://github.com/alrayyes/org-roam-to-obsidian/compare/v3.1.3...v3.2.0) (2026-08-12)
+
+
+### Features
+
+* convert org footnotes ([1d04141](https://github.com/alrayyes/org-roam-to-obsidian/commit/1d04141a4358f3c4f747acf64b19a5568c4ed7e7))
+* convert org footnotes ([6021e87](https://github.com/alrayyes/org-roam-to-obsidian/commit/6021e87137d764958c2c76a4d47c8b7ba6237da7)), closes [#32](https://github.com/alrayyes/org-roam-to-obsidian/issues/32)
+* convert org table separators ([1006f70](https://github.com/alrayyes/org-roam-to-obsidian/commit/1006f7085f9197f86e2402690655fe4cd0d0acc1))
+* convert org table separators ([18c9266](https://github.com/alrayyes/org-roam-to-obsidian/commit/18c926655f3ba04f7e78878d432dc3f9ec5fc658)), closes [#33](https://github.com/alrayyes/org-roam-to-obsidian/issues/33)
+
+
+### Bug Fixes
+
+* convert links inside headings ([5c32902](https://github.com/alrayyes/org-roam-to-obsidian/commit/5c32902533c697876256bad8563baf53fc68ba80))
+* convert links inside headings ([4c6c7de](https://github.com/alrayyes/org-roam-to-obsidian/commit/4c6c7de754d07ab3ac2e6567a7ae0e8d2a48f81e)), closes [#31](https://github.com/alrayyes/org-roam-to-obsidian/issues/31)
+* convert quote and example blocks ([a143fe5](https://github.com/alrayyes/org-roam-to-obsidian/commit/a143fe5180bf01d1c067190947fc18f33631f5bc))
+* convert quote and example blocks ([7a14eda](https://github.com/alrayyes/org-roam-to-obsidian/commit/7a14eda6751bfff6e1c73c6f3cf1651b867db08a)), closes [#34](https://github.com/alrayyes/org-roam-to-obsidian/issues/34)
+* drop the whole table of contents ([a350cc4](https://github.com/alrayyes/org-roam-to-obsidian/commit/a350cc43e336edee4aee7efc212dc9c3bfb95fca))
+* drop the whole table of contents ([d9744cb](https://github.com/alrayyes/org-roam-to-obsidian/commit/d9744cbefc67c50d34f1c910e6e24b2f11df8984)), closes [#18](https://github.com/alrayyes/org-roam-to-obsidian/issues/18)
+* keep colons in property values ([9655944](https://github.com/alrayyes/org-roam-to-obsidian/commit/9655944265d51967696e3dc8a80aa39bcf0e8aa5))
+* keep colons in property values ([a432c54](https://github.com/alrayyes/org-roam-to-obsidian/commit/a432c5421bcfe158335079317b943e79610f4b0b)), closes [#17](https://github.com/alrayyes/org-roam-to-obsidian/issues/17)
+* read #+TITLE: in either case ([c328703](https://github.com/alrayyes/org-roam-to-obsidian/commit/c3287035dff187b73a4c84c27c43ae1f81107b72))
+* read #+TITLE: in either case ([00d408e](https://github.com/alrayyes/org-roam-to-obsidian/commit/00d408e2d78d2c9ea128462b6feee2d08baa38e3)), closes [#49](https://github.com/alrayyes/org-roam-to-obsidian/issues/49)
+* shift headings below the title ([9747d14](https://github.com/alrayyes/org-roam-to-obsidian/commit/9747d145983845bd3b5e225001424fde8699fa98))
+* shift headings below the title ([cbeb9e6](https://github.com/alrayyes/org-roam-to-obsidian/commit/cbeb9e6808f2585f1b4095a7c3048eb5f4d91529)), closes [#20](https://github.com/alrayyes/org-roam-to-obsidian/issues/20)
+
 ## [3.1.3](https://github.com/alrayyes/org-roam-to-obsidian/compare/v3.1.2...v3.1.3) (2026-08-12)
 
 
