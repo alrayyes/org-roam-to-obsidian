@@ -83,7 +83,11 @@ jobs:
           docker build -t smoke:test .
           mkdir -p /tmp/in /tmp/out
           printf ':PROPERTIES:\n:ID:       abc\n:END:\n#+title: Smoke\n\n* Heading\n' > /tmp/in/20200101000000-smoke.org
-          docker run --rm -v /tmp/in:/input:ro -v /tmp/out:/output smoke:test
+          # As the invoking user, which is what the README tells anyone whose
+          # uid is not 1000 to do. The runner's is 1001, so without this the
+          # container cannot write to the mount.
+          docker run --rm --user "$(id -u):$(id -g)" \
+            -v /tmp/in:/input:ro -v /tmp/out:/output smoke:test
           test -f /tmp/out/smoke.md || { echo "no output written"; exit 1; }
           grep -q '^title: Smoke' /tmp/out/smoke.md || { echo "no title in frontmatter"; exit 1; }
           grep -q '^## Heading' /tmp/out/smoke.md || { echo "heading not shifted below the title"; exit 1; }
