@@ -84,6 +84,7 @@ class OrgRoamConverter:
         result = []
         in_properties_block = False
         in_src_block = False
+        in_quote_block = False
         skip_toc = False
         title = None
         frontmatter_props = {}
@@ -147,7 +148,35 @@ class OrgRoamConverter:
                 result.append("```")
                 in_src_block = False
                 continue
+            elif directive.startswith("#+begin_example"):
+                result.append("```")
+                in_src_block = True
+                continue
+            elif directive.startswith("#+end_example"):
+                result.append("```")
+                in_src_block = False
+                continue
+            elif directive.startswith("#+begin_quote"):
+                in_quote_block = True
+                continue
+            elif directive.startswith("#+end_quote"):
+                in_quote_block = False
+                continue
             elif directive.startswith("#+results:"):
+                continue
+            elif directive.startswith("#+begin") or directive.startswith("#+end"):
+                # A block we have no rendering for. Drop the delimiters and keep
+                # the text, which is what happened to every lowercase block
+                # before the directive test stopped being case-sensitive.
+                continue
+
+            if in_quote_block:
+                # Links inside a quote need converting like any other prose, so
+                # this runs the substitution rather than short-circuiting past it.
+                # A blank line still needs the marker, or the quote ends there and
+                # the rest becomes an ordinary paragraph.
+                quoted = ORG_LINK.sub(self.convert_link, line)
+                result.append(f"> {quoted}" if quoted.strip() else ">")
                 continue
 
             # Skip content in results blocks (lines starting with: after RESULTS)

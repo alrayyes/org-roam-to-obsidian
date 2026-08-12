@@ -27,6 +27,54 @@ class TestHeadings:
         assert converter.convert_org_to_markdown(org) == "# One\n## Two\n### Three"
 
 
+class TestQuoteAndExampleBlocks:
+    def test_quote_block_becomes_a_blockquote(self, converter):
+        org = "#+BEGIN_QUOTE\nSomething worth quoting.\n#+END_QUOTE"
+
+        assert converter.convert_org_to_markdown(org) == "> Something worth quoting."
+
+    def test_lowercase_quote_block_is_recognised(self, converter):
+        org = "#+begin_quote\nSomething worth quoting.\n#+end_quote"
+
+        assert converter.convert_org_to_markdown(org) == "> Something worth quoting."
+
+    def test_every_line_of_a_quote_is_prefixed(self, converter):
+        org = "#+begin_quote\nFirst line.\nSecond line.\n#+end_quote"
+
+        assert converter.convert_org_to_markdown(org) == "> First line.\n> Second line."
+
+    def test_blank_lines_inside_a_quote_keep_the_marker(self, converter):
+        org = "#+begin_quote\nFirst.\n\nSecond.\n#+end_quote"
+
+        assert converter.convert_org_to_markdown(org) == "> First.\n>\n> Second."
+
+    def test_example_block_becomes_a_plain_fenced_block(self, converter):
+        org = "#+begin_example\nliteral text\n#+end_example"
+
+        assert converter.convert_org_to_markdown(org) == "```\nliteral text\n```"
+
+    def test_uppercase_example_block_is_recognised(self, converter):
+        org = "#+BEGIN_EXAMPLE\nliteral text\n#+END_EXAMPLE"
+
+        assert converter.convert_org_to_markdown(org) == "```\nliteral text\n```"
+
+    def test_org_syntax_inside_an_example_is_left_alone(self, converter):
+        org = "#+begin_example\n* not a heading\n#+end_example"
+
+        assert converter.convert_org_to_markdown(org) == "```\n* not a heading\n```"
+
+    def test_links_inside_a_quote_are_still_converted(self, converter):
+        converter.id_to_title["abc-123"] = "Eisenhower"
+        org = "#+begin_quote\nSaid by [[id:abc-123][Ike]].\n#+end_quote"
+
+        assert converter.convert_org_to_markdown(org) == "> Said by [[Eisenhower]]."
+
+    def test_an_unhandled_block_loses_its_delimiters_but_keeps_its_text(self, converter):
+        org = "#+begin_verse\nRoses are red\n#+end_verse"
+
+        assert converter.convert_org_to_markdown(org) == "Roses are red"
+
+
 class TestCodeBlocks:
     def test_src_block_becomes_a_fenced_block_with_its_language(self, converter):
         org = "#+BEGIN_SRC python\nprint('hi')\n#+END_SRC"
