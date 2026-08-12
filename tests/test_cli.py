@@ -122,11 +122,6 @@ def test_a_custom_property_can_supply_the_created_date(tmp_path):
     assert "created: 2019-05-04T09:00:00" in (target / "dated.md").read_text(encoding="utf-8")
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason="the bare-link substitution rewrites the wikilink it just produced, "
-    "https://github.com/alrayyes/org-roam-to-obsidian/issues/15",
-)
 def test_a_link_between_notes_becomes_a_wikilink(vault):
     source, target = vault
 
