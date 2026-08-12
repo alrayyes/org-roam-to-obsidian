@@ -59,11 +59,6 @@ class TestCodeBlocks:
 
 
 class TestLinks:
-    @pytest.mark.xfail(
-        strict=True,
-        reason="the bare-link substitution rewrites the wikilink it just produced, "
-        "https://github.com/alrayyes/org-roam-to-obsidian/issues/15",
-    )
     def test_id_link_resolves_to_the_target_note_title(self, converter):
         converter.id_to_title["abc-123"] = "Real Title"
 
@@ -71,31 +66,16 @@ class TestLinks:
 
         assert markdown == "See [[Real Title]]."
 
-    @pytest.mark.xfail(
-        strict=True,
-        reason="the bare-link substitution rewrites the wikilink it just produced, "
-        "https://github.com/alrayyes/org-roam-to-obsidian/issues/15",
-    )
     def test_unknown_id_falls_back_to_the_link_text(self, converter):
         markdown = converter.convert_org_to_markdown("See [[id:abc-123][Other Note]].")
 
         assert markdown == "See [[Other Note]]."
 
-    @pytest.mark.xfail(
-        strict=True,
-        reason="the URL group excludes colons, "
-        "https://github.com/alrayyes/org-roam-to-obsidian/issues/16",
-    )
     def test_described_external_link_becomes_an_inline_link(self, converter):
         markdown = converter.convert_org_to_markdown("See [[https://example.com][Example]].")
 
         assert markdown == "See [Example](https://example.com)."
 
-    @pytest.mark.xfail(
-        strict=True,
-        reason="the URL group excludes colons, "
-        "https://github.com/alrayyes/org-roam-to-obsidian/issues/16",
-    )
     def test_bare_external_link_becomes_a_self_titled_link(self, converter):
         markdown = converter.convert_org_to_markdown("See [[https://example.com]].")
 

@@ -9,6 +9,10 @@ import re
 from pathlib import Path
 from typing import Dict, List, Tuple
 
+# An org link is [[target]] or [[target][description]]. Both halves stop at the
+# first closing bracket, which is what org itself allows.
+ORG_LINK = re.compile(r"\[\[([^\]]+)](?:\[([^\]]+)])?]")
+
 
 def extract_id_and_title(filepath: Path) -> Tuple[str, str]:
     """Extract the ID and title from an org file."""
@@ -57,6 +61,22 @@ class OrgRoamConverter:
             if file_id and title:
                 self.id_to_title[file_id] = title
         print(f"Found {len(self.id_to_title)} files with IDs")
+
+    def convert_link(self, match: "re.Match") -> str:
+        """Render one org link as Markdown.
+
+        Every link form is handled in this single pass. Substituting them one
+        pattern at a time cannot work: once an ID link has become [[Title]] it
+        is indistinguishable from an org link whose target is literally
+        "Title", so the pass that handles the second rewrites the first.
+        """
+        target, description = match.group(1), match.group(2)
+
+        if target.startswith("id:"):
+            file_id = target[len("id:") :]
+            return f"[[{self.id_to_title.get(file_id, description or file_id)}]]"
+
+        return f"[{description or target}]({target})"
 
     def convert_org_to_markdown(self, content: str, created_timestamp: str = None) -> str:
         """Convert org-mode syntax to Markdown."""
@@ -143,18 +163,7 @@ class OrgRoamConverter:
                 result.append(f"{'#' * level} {header_text}")
                 continue
 
-            # Convert org-mode links [[id:...][title]] or [[url][title]]
-            line = re.sub(
-                r"\[\[id:([a-f0-9-]+)]\[([^]]+)]]",
-                lambda m: f"[[{self.id_to_title.get(m.group(1), m.group(2))}]]",
-                line,
-            )
-
-            # Convert [[url][title]] to [title](url)
-            line = re.sub(r"\[\[([^:\]]+)]\[([^]]+)]]", r"[\2](\1)", line)
-
-            # Convert [[url]] to [url](url)
-            line = re.sub(r"\[\[([^:\]]+)]]", r"[\1](\1)", line)
+            line = ORG_LINK.sub(self.convert_link, line)
 
             result.append(line)
 
