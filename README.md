@@ -115,6 +115,7 @@ Extract org-mode properties to frontmatter:
 - `-p, --properties`: org-mode properties to extract, for example `filetags` or `roam_refs`
 - `--no-created`: Disable adding created timestamp from filename
 - `--no-modified`: Disable adding the modified timestamp from the org file's mtime
+- `--title-heading`: repeat the title as an H1 at the top of the body
 - `--keep-dead-links`: keep wikilinks whose target doesn't exist, instead of unwrapping them
 - `--publish-when`: mark a note for publishing when it carries this org property value, for example `category=public`
 - `--publish-key`: name of the frontmatter key that carries the flag (default: `publish`)
@@ -178,6 +179,16 @@ other, and passing several names writes the same timestamp under each:
 
 The defaults are `created` and `modified`, so output only changes if you ask for it.
 
+### The title
+
+The title goes in the frontmatter and nowhere else. Obsidian shows it above the note and Quartz
+renders it as the page heading, so writing it again as an H1 puts it on the page twice.
+
+Because the renderer supplies the title, the top-level headings in the org file become `##` rather
+than `#`,
+which keeps the hierarchy the org file had. Pass `--title-heading` if you're rendering the Markdown
+somewhere that shows no title of its own, and you want the H1 back.
+
 ### Links that go nowhere
 
 A note can link to something that no longer exists, usually because the target was deleted, or the
@@ -228,7 +239,7 @@ roam_refs: https://example.com
 
 - `:PROPERTIES:` blocks
 - `:ID:` fields
-- `#+title:` directives (converted to frontmatter and H1 header)
+- `#+title:` directives (converted to frontmatter)
 - Property directives (converted to frontmatter if specified with `-p`)
 - `#+RESULTS:` blocks
 - Table of Contents (`:TOC_:` sections)

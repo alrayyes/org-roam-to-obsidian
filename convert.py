@@ -153,6 +153,7 @@ class OrgRoamConverter:
         publish_when: Tuple[str, str] = None,
         publish_key: str = "publish",
         remove_dead_links: bool = True,
+        title_heading: bool = False,
     ):
         self.source_dir = Path(source_dir).expanduser()
         self.target_dir = Path(target_dir)
@@ -174,6 +175,9 @@ class OrgRoamConverter:
         self.publish_when = publish_when
         self.publish_key = publish_key
         self.remove_dead_links = remove_dead_links
+        # Obsidian and Quartz both show the title above the body, so repeating
+        # it as an H1 renders it twice. Off unless something asks for it.
+        self.title_heading = title_heading
         # Output paths already written this run, so a second note claiming the
         # same name is noticed rather than silently replacing the first.
         self.written: Dict[Path, str] = {}
@@ -401,10 +405,9 @@ class OrgRoamConverter:
             frontmatter.append("---")
             frontmatter_str = "\n".join(frontmatter)
 
-            if title:
+            if title and self.title_heading:
                 return f"{frontmatter_str}\n\n# {title}\n\n{markdown_content}"
-            else:
-                return f"{frontmatter_str}\n\n{markdown_content}"
+            return f"{frontmatter_str}\n\n{markdown_content}"
 
         return markdown_content
 
@@ -607,6 +610,12 @@ def main():
         help="Disable adding created timestamp from filename",
     )
     parser.add_argument(
+        "--title-heading",
+        action="store_true",
+        help="Repeat the title as an H1 at the top of the body. Off by default, because "
+        "Obsidian and Quartz already show it",
+    )
+    parser.add_argument(
         "--keep-dead-links",
         action="store_true",
         help="Keep wikilinks whose target does not exist, instead of unwrapping them",
@@ -681,6 +690,7 @@ def main():
         publish_when=publish_when,
         publish_key=args.publish_key,
         remove_dead_links=not args.keep_dead_links,
+        title_heading=args.title_heading,
     )
     converter.convert_all()
 
