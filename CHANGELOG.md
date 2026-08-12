@@ -1,5 +1,15 @@
 # Changelog
 
+## [3.1.2](https://github.com/alrayyes/org-roam-to-obsidian/compare/v3.1.1...v3.1.2) (2026-08-12)
+
+
+### Documentation
+
+* add badges to the README ([1facec3](https://github.com/alrayyes/org-roam-to-obsidian/commit/1facec38b6b90e3343a039deeca5c9b9abb1db16))
+* bring the README up to standard ([0f8c73b](https://github.com/alrayyes/org-roam-to-obsidian/commit/0f8c73bb607ca8e49a89a2153ac89819431047c3))
+* record the broken features ([87121c3](https://github.com/alrayyes/org-roam-to-obsidian/commit/87121c3660498a99c1bf55da456992aa43563333))
+* state the real requirements ([9e3a85b](https://github.com/alrayyes/org-roam-to-obsidian/commit/9e3a85b68aa35864ed9258ff79a817666b653aa8))
+
 ## [3.1.1](https://github.com/alrayyes/org-roam-to-obsidian/compare/v3.1.0...v3.1.1) (2026-08-09)
 
 
