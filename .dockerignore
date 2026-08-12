@@ -1,0 +1,18 @@
+# The image needs convert.py and nothing else. Everything here would otherwise
+# land in the build context and slow every build down for no benefit.
+.git
+.github
+.venv
+node_modules
+output
+styles
+tests
+docs
+*.md
+!README.md
+.pytest_cache
+.ruff_cache
+bun.lock
+package.json
+pyproject.toml
+requirements-dev.txt

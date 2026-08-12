@@ -3,6 +3,7 @@
 [![Test](https://github.com/alrayyes/org-roam-to-obsidian/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/alrayyes/org-roam-to-obsidian/actions/workflows/test.yml)
 [![Lint](https://github.com/alrayyes/org-roam-to-obsidian/actions/workflows/lint.yml/badge.svg?branch=main)](https://github.com/alrayyes/org-roam-to-obsidian/actions/workflows/lint.yml)
 [![Prose](https://github.com/alrayyes/org-roam-to-obsidian/actions/workflows/prose.yml/badge.svg?branch=main)](https://github.com/alrayyes/org-roam-to-obsidian/actions/workflows/prose.yml)
+[![Docker](https://github.com/alrayyes/org-roam-to-obsidian/actions/workflows/docker.yml/badge.svg?branch=main)](https://github.com/alrayyes/org-roam-to-obsidian/actions/workflows/docker.yml)
 [![Release](https://img.shields.io/github/v/release/alrayyes/org-roam-to-obsidian)](https://github.com/alrayyes/org-roam-to-obsidian/releases)
 [![Licence](https://img.shields.io/github/license/alrayyes/org-roam-to-obsidian)](LICENSE)
 
@@ -45,6 +46,30 @@ Make the script executable:
 ```bash
 chmod +x convert.py
 ```
+
+### Docker
+
+If you'd rather not have Python on the machine at all, there's an image on the GitHub Container
+Registry. Mount your notes at `/input` and somewhere to write at `/output`:
+
+```bash
+docker run --rm \
+  -v ~/Documents/slip-box:/input:ro \
+  -v ~/obsidian-vault/imported:/output \
+  ghcr.io/alrayyes/org-roam-to-obsidian:latest
+```
+
+Every flag below still works, appended to that command:
+
+```bash
+docker run --rm -v ~/notes:/input:ro -v ~/out:/output \
+  ghcr.io/alrayyes/org-roam-to-obsidian:latest -p filetags roam_refs
+```
+
+The input mount is read-only above because the converter never writes to it, and there's no
+reason to hand a container write access to your notes. It runs as UID 1000 rather than root, so
+the files it writes belong to you and not to a directory you need `sudo` to delete. `latest`
+follows `main`; released versions are tagged `3`, `3.2` and `3.2.0`.
 
 That's the whole installation. If you're going to work on the converter rather than run it, the
 virtual environment, the linters and the git hooks are all in
