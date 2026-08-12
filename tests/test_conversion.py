@@ -93,6 +93,11 @@ class TestFrontmatter:
 
         assert markdown == "---\ntitle: My Note\n---\n\n# My Note\n\nBody."
 
+    def test_uppercase_title_directive_is_recognised(self, converter):
+        markdown = converter.convert_org_to_markdown("#+TITLE: My Note\n\nBody.")
+
+        assert markdown == "---\ntitle: My Note\n---\n\n# My Note\n\nBody."
+
     def test_a_document_without_metadata_gets_no_frontmatter(self, converter):
         assert converter.convert_org_to_markdown("Just body text.") == "Just body text."
 
@@ -172,6 +177,15 @@ class TestReadingMetadataFromDisk:
         org_file = tmp_path / "note.org"
         org_file.write_text(
             ":PROPERTIES:\n:ID:       abc-123\n:END:\n#+title: My Note\n\nBody.\n",
+            encoding="utf-8",
+        )
+
+        assert extract_id_and_title(org_file) == ("abc-123", "My Note")
+
+    def test_an_uppercase_title_is_read_from_the_file(self, tmp_path):
+        org_file = tmp_path / "note.org"
+        org_file.write_text(
+            ":PROPERTIES:\n:ID:       abc-123\n:END:\n#+TITLE: My Note\n\nBody.\n",
             encoding="utf-8",
         )
 
