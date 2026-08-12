@@ -377,6 +377,63 @@ class TestFrontmatter:
         assert markdown.startswith("---\ntitle: My Note\ncreated: 2020-06-13T17:05:32\n---")
 
 
+class TestPublishFlag:
+    def test_a_matching_property_sets_the_flag(self, tmp_path):
+        converter = OrgRoamConverter(
+            str(tmp_path), str(tmp_path), publish_when=("category", "public")
+        )
+
+        markdown = converter.convert_org_to_markdown("#+title: T\n#+category: public\n\nBody.")
+
+        assert "publish: true" in markdown
+
+    def test_a_different_value_sets_nothing(self, tmp_path):
+        converter = OrgRoamConverter(
+            str(tmp_path), str(tmp_path), publish_when=("category", "public")
+        )
+
+        markdown = converter.convert_org_to_markdown("#+title: T\n#+category: draft\n\nBody.")
+
+        assert "publish" not in markdown
+
+    def test_a_missing_property_sets_nothing(self, tmp_path):
+        converter = OrgRoamConverter(
+            str(tmp_path), str(tmp_path), publish_when=("category", "public")
+        )
+
+        markdown = converter.convert_org_to_markdown("#+title: T\n\nBody.")
+
+        assert "publish" not in markdown
+
+    def test_the_value_can_be_one_of_several_in_the_property(self, tmp_path):
+        converter = OrgRoamConverter(
+            str(tmp_path), str(tmp_path), publish_when=("category", "public")
+        )
+
+        markdown = converter.convert_org_to_markdown(
+            "#+title: T\n#+category: draft public\n\nBody."
+        )
+
+        assert "publish: true" in markdown
+
+    def test_the_flag_key_can_be_renamed(self, tmp_path):
+        converter = OrgRoamConverter(
+            str(tmp_path),
+            str(tmp_path),
+            publish_when=("category", "public"),
+            publish_key="published",
+        )
+
+        markdown = converter.convert_org_to_markdown("#+title: T\n#+category: public\n\nBody.")
+
+        assert "published: true" in markdown
+
+    def test_nothing_happens_without_the_option(self, converter):
+        markdown = converter.convert_org_to_markdown("#+title: T\n#+category: public\n\nBody.")
+
+        assert "publish" not in markdown
+
+
 class TestRemovedContent:
     def test_properties_drawer_is_dropped(self, converter):
         org = ":PROPERTIES:\n:ID:       abc-123\n:END:\nBody."
