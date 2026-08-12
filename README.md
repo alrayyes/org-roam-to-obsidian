@@ -41,7 +41,7 @@ For contributing or development:
 python -m venv .venv
 source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 
-# Install Python development tools (pinned in requirements-dev.txt)
+# Install Python development tools — ruff and pytest (pinned in requirements-dev.txt)
 pip install -r requirements-dev.txt
 
 # Install Node.js dependencies (for commitlint) using Bun
@@ -63,6 +63,25 @@ ruff format .
 echo "feat: add new feature" | bunx commitlint
 ```
 
+#### Tests
+
+Run the suite with `pytest`. There are two layers and no more, because a
+single-file CLI with no database and no network has nowhere else to hide.
+
+`tests/test_cli.py` runs `convert.py` as a subprocess over a throwaway org-roam
+directory, so argument parsing, output filenames and the two-pass conversion
+all get covered in one journey. `tests/test_conversion.py` takes the org-mode
+constructs one at a time: headings, source blocks, links, properties, and the
+content the converter strips out.
+
+Some tests are marked `xfail`. They describe behaviour this README promises, but
+the converter doesn't deliver yet, and each one names the issue that tracks it.
+When you fix the bug, delete the marker. Don't edit the expectation to match
+what the code happens to do. The marker is strict, so a test that starts passing
+by accident fails the build until someone removes its marker.
+
+The suite runs on `pre-push`, and in CI against Python 3.8 and 3.14.
+
 #### Git Hooks
 
 This project uses [lefthook](https://github.com/evilmartians/lefthook) to manage git hooks:
@@ -70,8 +89,8 @@ This project uses [lefthook](https://github.com/evilmartians/lefthook) to manage
 - **pre-commit**: Fixes staged files in place — `ruff format` and `ruff check --fix` on Python,
   `markdownlint --fix` on Markdown, and `prettier --write` on YAML and JSON
 - **commit-msg**: Validates commit messages with [commitlint](https://commitlint.js.org/) following [Conventional Commits](https://www.conventionalcommits.org/)
-- **pre-push**: Re-runs all of the above across the whole repository in check mode, so nothing
-  reaches the remote that CI would reject
+- **pre-push**: Runs `pytest`, then re-runs all of the above across the whole repository in check
+  mode, so nothing reaches the remote that CI would reject
 
 The hooks and the GitHub Actions workflows run the same commands deliberately. The hook is there
 to catch a problem early; CI is the gate that cannot be skipped. You can run the checks yourself

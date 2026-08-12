@@ -30,6 +30,8 @@ commit-msg:
 pre-push:
   parallel: true
   commands:
+    pytest:
+      run: .venv/bin/pytest
     ruff-format-check:
       run: .venv/bin/ruff format --check .
     ruff-check:
