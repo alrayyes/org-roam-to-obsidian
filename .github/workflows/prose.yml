@@ -61,4 +61,11 @@ jobs:
       # ltex-cli-plus exits 3 when it finds something, not 1, so a job that
       # tested for a specific code would pass a failing document.
       - name: Run LTeX
+        env:
+          # The archive ships its own JDK 21, which is the reason for taking the
+          # -linux-x64 build, but its launcher only falls back to that JDK when
+          # JAVA_HOME is empty. GitHub runners preset JAVA_HOME to Java 17, and
+          # LTeX is compiled for 21, so it dies with UnsupportedClassVersionError
+          # unless we clear it. Nothing else in this job wants Java.
+          JAVA_HOME: ""
         run: ltex-cli-plus --client-configuration=.ltex.json README.md
