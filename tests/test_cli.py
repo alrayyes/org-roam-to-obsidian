@@ -86,7 +86,7 @@ def test_a_note_carries_its_title_and_created_date(vault):
     assert (
         (target / "Second Note.md")
         .read_text(encoding="utf-8")
-        .startswith("---\ntitle: Second Note\ncreated: 2021-01-01T12:00:00\n---\n\n# Second Note\n")
+        .startswith("---\ntitle: Second Note\ncreated: 2021-01-01T12:00:00\nmodified: ")
     )
 
 
@@ -341,6 +341,35 @@ def test_the_report_counts_every_broken_link(tmp_path):
     output = run_convert("-i", str(source), "-o", str(tmp_path / "out"))
 
     assert "2 links point nowhere" in output
+
+
+def test_modified_comes_from_the_org_file(tmp_path):
+    """Quartz reads `modified`; without it a site dates every page at export time."""
+    import os
+
+    source = tmp_path / "slip-box"
+    source.mkdir()
+    note = source / "20200613170905-javascript.org"
+    note.write_text("#+title: JavaScript\n\nBody.\n", encoding="utf-8")
+    os.utime(note, (1711996929, 1711996929))  # 2024-04-01T18:42:09Z
+    target = tmp_path / "out"
+
+    run_convert("-i", str(source), "-o", str(target))
+
+    written = (target / "JavaScript.md").read_text(encoding="utf-8")
+    assert "created: 2020-06-13T17:09:05" in written
+    assert "modified: 2024-04-01T" in written
+
+
+def test_no_modified_flag_leaves_it_out(tmp_path):
+    source = tmp_path / "slip-box"
+    source.mkdir()
+    (source / "20200613170905-javascript.org").write_text("#+title: JS\n", encoding="utf-8")
+    target = tmp_path / "out"
+
+    run_convert("-i", str(source), "-o", str(target), "--no-modified")
+
+    assert "modified:" not in (target / "JS.md").read_text(encoding="utf-8")
 
 
 def test_an_empty_source_directory_is_not_an_error(tmp_path):
