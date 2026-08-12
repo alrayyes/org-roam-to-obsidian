@@ -115,17 +115,27 @@ class TestFrontmatter:
 
         assert markdown == "Body."
 
-    @pytest.mark.xfail(
-        strict=True,
-        reason="property values are split on every colon, "
-        "https://github.com/alrayyes/org-roam-to-obsidian/issues/17",
-    )
     def test_url_valued_property_survives_intact(self, tmp_path):
         converter = OrgRoamConverter(str(tmp_path), str(tmp_path), properties=["roam_refs"])
 
         markdown = converter.convert_org_to_markdown("#+roam_refs: https://example.com\n\nBody.")
 
         assert "roam_refs: https://example.com" in markdown
+
+    def test_several_urls_become_a_list(self, tmp_path):
+        converter = OrgRoamConverter(str(tmp_path), str(tmp_path), properties=["roam_refs"])
+        org = "#+roam_refs: https://example.com https://other.example\n\nBody."
+
+        markdown = converter.convert_org_to_markdown(org)
+
+        assert "roam_refs:\n  - https://example.com\n  - https://other.example" in markdown
+
+    def test_colon_wrapped_tags_are_still_split(self, tmp_path):
+        converter = OrgRoamConverter(str(tmp_path), str(tmp_path), properties=["filetags"])
+
+        markdown = converter.convert_org_to_markdown("#+filetags: :one:two:\n\nBody.")
+
+        assert "filetags:\n  - one\n  - two" in markdown
 
     def test_created_timestamp_is_placed_below_the_title(self, converter):
         markdown = converter.convert_org_to_markdown("#+title: My Note", "2020-06-13T17:05:32")
