@@ -1,5 +1,17 @@
 # Changelog
 
+## [3.7.0](https://github.com/alrayyes/org-roam-to-obsidian/compare/v3.6.0...v3.7.0) (2026-08-13)
+
+
+### Features
+
+* unwrap links that go nowhere ([#78](https://github.com/alrayyes/org-roam-to-obsidian/issues/78)) ([fcb9589](https://github.com/alrayyes/org-roam-to-obsidian/commit/fcb9589a33c0af8ff6043461b2782b1c859d71fb)), closes [#77](https://github.com/alrayyes/org-roam-to-obsidian/issues/77)
+
+
+### Bug Fixes
+
+* stop rendering the title twice ([#81](https://github.com/alrayyes/org-roam-to-obsidian/issues/81)) ([2263006](https://github.com/alrayyes/org-roam-to-obsidian/commit/2263006753fc4a030402ed2bb159bc5d9117e373)), closes [#80](https://github.com/alrayyes/org-roam-to-obsidian/issues/80)
+
 ## [3.6.0](https://github.com/alrayyes/org-roam-to-obsidian/compare/v3.5.0...v3.6.0) (2026-08-12)
 
 
