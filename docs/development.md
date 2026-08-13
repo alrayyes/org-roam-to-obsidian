@@ -10,9 +10,8 @@ on the same commands, and every one of them is here for a reason recorded below.
 
 Running the converter needs Python and nothing else. Working on it needs:
 
-- **[bun](https://bun.sh)** for the Node-shaped tooling: commitlint, Biome, Prettier and
-  markdownlint-cli2. Not npm. The lockfile is `bun.lock`.
-- **[lefthook](https://github.com/evilmartians/lefthook)** to install the git hooks.
+- **[bun](https://bun.sh)** for the Node-shaped tooling: commitlint, Biome, Prettier,
+  markdownlint-cli2 and lefthook. Not npm. The lockfile is `bun.lock`.
 - **ruff** and **pytest**, both pinned in `requirements-dev.txt`.
 - **[Vale](https://vale.sh)**, optional. The hooks skip it when it isn't on your `PATH`, and CI
   runs it either way.
@@ -27,16 +26,9 @@ source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 # Install Python development tools — ruff and pytest (pinned in requirements-dev.txt)
 pip install -r requirements-dev.txt
 
-# Install Node.js dependencies (for commitlint) using Bun
+# Install the Node-shaped tooling with Bun. This also installs the git hooks:
+# lefthook is pinned in package.json and the `prepare` script runs it for you.
 bun install
-
-# Install lefthook for git hooks (optional but recommended)
-# On macOS: brew install lefthook
-# On Arch Linux: yay -S lefthook
-# Or download from: https://github.com/evilmartians/lefthook/releases
-
-# Initialize git hooks
-lefthook install
 
 # Run linter and formatter manually
 ruff check .
@@ -67,7 +59,9 @@ The suite runs on `pre-push`, and in CI against Python 3.8 and 3.14.
 
 ## Git hooks
 
-This project uses [lefthook](https://github.com/evilmartians/lefthook) to manage git hooks:
+This project uses [lefthook](https://github.com/evilmartians/lefthook) to manage git hooks. It's
+pinned in `package.json` like every other tool here, so `bun install` puts the hooks in place and
+everyone gets the same version of them:
 
 - **pre-commit**: Fixes staged files in place. `ruff format` and `ruff check --fix` on Python,
   `prettier --write` then `markdownlint-cli2 --fix` on Markdown, `prettier --write` on YAML, and
