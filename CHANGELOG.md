@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.7.1](https://github.com/alrayyes/org-roam-to-obsidian/compare/v3.7.0...v3.7.1) (2026-08-14)
+
+
+### Documentation
+
+* put the development guide where a forge looks for it ([#84](https://github.com/alrayyes/org-roam-to-obsidian/issues/84)) ([eed0366](https://github.com/alrayyes/org-roam-to-obsidian/commit/eed03663a5ac8adcdd1b0130b7598f319854627a))
+
 ## [3.7.0](https://github.com/alrayyes/org-roam-to-obsidian/compare/v3.6.0...v3.7.0) (2026-08-13)
 
 
