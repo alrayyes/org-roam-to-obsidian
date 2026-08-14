@@ -63,7 +63,7 @@ jobs:
       #
       # The file list is explicit rather than a glob: this is the prose we
       # write, and CHANGELOG.md is generated text that belongs to nobody's
-      # grammar checker. Add new pages under docs/ here as they appear.
+      # grammar checker. Add new pages here as they appear.
       - name: Run LTeX
         env:
           # The archive ships its own JDK 21, which is the reason for taking the
@@ -72,4 +72,4 @@ jobs:
           # LTeX is compiled for 21, so it dies with UnsupportedClassVersionError
           # unless we clear it. Nothing else in this job wants Java.
           JAVA_HOME: ""
-        run: ltex-cli-plus --client-configuration=.ltex.json README.md docs/development.md CLAUDE.md
+        run: ltex-cli-plus --client-configuration=.ltex.json README.md CONTRIBUTING.md CLAUDE.md

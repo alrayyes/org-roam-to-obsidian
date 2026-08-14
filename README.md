@@ -30,7 +30,7 @@ to. The converter never opens the org-roam SQLite database, so Emacs doesn't hav
 and the database doesn't have to be up-to-date.
 
 Working on the converter needs more than running it does. That list is in
-[docs/development.md](docs/development.md).
+[CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Installation
 
@@ -84,7 +84,7 @@ docker run --rm --user "$(id -u):$(id -g)" \
 
 That's the whole installation. If you're going to work on the converter rather than run it, the
 virtual environment, the linters and the git hooks are all in
-[docs/development.md](docs/development.md).
+[CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Usage
 
@@ -253,7 +253,7 @@ This project is licensed under the GNU General Public License v3.0 - see the [LI
 
 Contributions are welcome. Open a pull request.
 
-Read [docs/development.md](docs/development.md) first. It covers the setup, how to run the tests,
+Read [CONTRIBUTING.md](CONTRIBUTING.md) first. It covers the setup, how to run the tests,
 and what each linter is for, which saves you finding out from a failing hook.
 
 ## Known limitations

@@ -1,7 +1,7 @@
-# Development
+# Contributing
 
 How to work on the converter. If you only want to run it, the
-[README](../README.md) has everything you need and none of this.
+[README](README.md) has everything you need and none of this.
 
 The short version: the linters are opinionated, they run in git hooks and in CI
 on the same commands, and every one of them is here for a reason recorded below.
