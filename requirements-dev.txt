@@ -4,4 +4,4 @@
 ruff==0.16.2
 # pytest 8.3.x is the last line supporting Python 3.8, which this project still
 # declares. Bump it in step with requires-python, not ahead of it.
-pytest==8.3.5
+pytest==9.1.1
