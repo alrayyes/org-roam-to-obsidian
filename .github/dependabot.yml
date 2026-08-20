@@ -29,3 +29,14 @@ updates:
       prefix: "chore"
       prefix-development: "chore"
       include: "scope"
+
+  # The Dockerfile's base image (python:3.13-alpine, digest-pinned). Ships
+  # in the published container, unlike the dev-tooling entries above.
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "fix"
+      prefix-development: "fix"
+      include: "scope"
