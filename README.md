@@ -21,9 +21,9 @@ Convert your org-roam notes to Obsidian-compatible Markdown format.
 
 ## Requirements
 
-To run the converter you need **Python 3.8 or newer** and nothing else. `convert.py` imports only
-the standard library, so there's no `pip install` step and no virtual environment to create. It
-runs anywhere Python does. The paths in the examples are written for Linux and macOS.
+To run the converter you need **Python 3.14 or newer** and nothing else. `convert.py` imports only
+the standard library, so there's no `pip install` step and no virtual environment to create. The
+paths in the examples are written for Linux and macOS.
 
 You also need a directory of org-roam `.org` files you can read, and somewhere to write Markdown
 to. The converter never opens the org-roam SQLite database, so Emacs doesn't have to be running,
