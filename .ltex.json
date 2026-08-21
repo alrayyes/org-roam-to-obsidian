@@ -17,6 +17,7 @@
       "markdownlint",
       "ruff",
       "pytest",
+      "pytest-cov",
       "xfail",
       "xfails",
       "Dependabot",
