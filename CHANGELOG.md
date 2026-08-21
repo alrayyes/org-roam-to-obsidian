@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.7.2](https://github.com/alrayyes/org-roam-to-obsidian/compare/v3.7.1...v3.7.2) (2026-08-21)
+
+
+### Bug Fixes
+
+* **deps-dev:** drop Python 3.8, target latest stable instead of pinning back ([#98](https://github.com/alrayyes/org-roam-to-obsidian/issues/98)) ([59d5d31](https://github.com/alrayyes/org-roam-to-obsidian/commit/59d5d31a2f0259100da6483908869c41a6f9a322)), closes [#97](https://github.com/alrayyes/org-roam-to-obsidian/issues/97)
+
 ## [3.7.1](https://github.com/alrayyes/org-roam-to-obsidian/compare/v3.7.0...v3.7.1) (2026-08-14)
 
 
