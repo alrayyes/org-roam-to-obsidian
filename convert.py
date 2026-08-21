@@ -8,7 +8,6 @@ import os
 import re
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Tuple
 
 # An org link is [[target]] or [[target][description]]. Both halves stop at the
 # first closing bracket, which is what org itself allows.
@@ -76,7 +75,7 @@ def safe_filename(title: str) -> str:
 WIKILINK = re.compile(r"\[\[([^\]|#]+)")
 
 
-def wikilinks_outside_code(markdown: str) -> List[str]:
+def wikilinks_outside_code(markdown: str) -> list[str]:
     """Every wikilink target in a converted note, ignoring fenced code.
 
     A JavaScript nested array reads as ``[[x]]`` and is not a link, so scanning
@@ -103,7 +102,7 @@ def modified_timestamp_of(org_file: Path) -> str:
     return datetime.fromtimestamp(org_file.stat().st_mtime).strftime("%Y-%m-%dT%H:%M:%S")
 
 
-def parse_property_value(value: str) -> List[str]:
+def parse_property_value(value: str) -> list[str]:
     """Split a ``#+property:`` value into its parts.
 
     Org writes tags wrapped in colons, ``:one:two:``, and everything else
@@ -116,7 +115,7 @@ def parse_property_value(value: str) -> List[str]:
     return value.split()
 
 
-def extract_id_and_title(filepath: Path) -> Tuple[str, str]:
+def extract_id_and_title(filepath: Path) -> tuple[str, str]:
     """Extract the ID and title from an org file."""
     file_id = None
     title = None
@@ -144,20 +143,20 @@ class OrgRoamConverter:
         self,
         source_dir: str,
         target_dir: str,
-        properties: List[str] = None,
+        properties: list[str] = None,
         add_created: bool = True,
         created_property: str = None,
         add_modified: bool = True,
-        created_keys: List[str] = None,
-        modified_keys: List[str] = None,
-        publish_when: Tuple[str, str] = None,
+        created_keys: list[str] = None,
+        modified_keys: list[str] = None,
+        publish_when: tuple[str, str] = None,
         publish_key: str = "publish",
         remove_dead_links: bool = True,
         title_heading: bool = False,
     ):
         self.source_dir = Path(source_dir).expanduser()
         self.target_dir = Path(target_dir)
-        self.id_to_title: Dict[str, str] = {}
+        self.id_to_title: dict[str, str] = {}
         self.properties = properties or []
         self.add_created = add_created
         self.created_property = created_property
@@ -180,7 +179,7 @@ class OrgRoamConverter:
         self.title_heading = title_heading
         # Output paths already written this run, so a second note claiming the
         # same name is noticed rather than silently replacing the first.
-        self.written: Dict[Path, str] = {}
+        self.written: dict[Path, str] = {}
         self.collisions = 0
 
     def build_id_map(self):
@@ -192,7 +191,7 @@ class OrgRoamConverter:
                 self.id_to_title[file_id] = title
         print(f"Found {len(self.id_to_title)} files with IDs")
 
-    def convert_link(self, match: "re.Match") -> str:
+    def convert_link(self, match: re.Match) -> str:
         """Render one org link as Markdown.
 
         Every link form is handled in this single pass. Substituting them one
@@ -521,7 +520,7 @@ class OrgRoamConverter:
 
         self.report_broken_links()
 
-    def strip_dead_links(self, broken_by_file: Dict[Path, List[str]]):
+    def strip_dead_links(self, broken_by_file: dict[Path, list[str]]):
         """Unwrap wikilinks whose target does not exist, keeping the words.
 
         Runs once every note is written, because only then is the full set of
@@ -554,7 +553,7 @@ class OrgRoamConverter:
                 resolvable.add(alias.strip())
 
         broken = []
-        by_file: Dict[Path, List[str]] = {}
+        by_file: dict[Path, list[str]] = {}
         for path in sorted(self.written):
             for target in wikilinks_outside_code(path.read_text(encoding="utf-8")):
                 if target not in resolvable:
