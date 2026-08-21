@@ -1,6 +1,7 @@
 # org-roam to Obsidian converter
 
 [![Test](https://github.com/alrayyes/org-roam-to-obsidian/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/alrayyes/org-roam-to-obsidian/actions/workflows/test.yml)
+[![Coverage](https://codecov.io/gh/alrayyes/org-roam-to-obsidian/graph/badge.svg)](https://codecov.io/gh/alrayyes/org-roam-to-obsidian)
 [![Lint](https://github.com/alrayyes/org-roam-to-obsidian/actions/workflows/lint.yml/badge.svg?branch=main)](https://github.com/alrayyes/org-roam-to-obsidian/actions/workflows/lint.yml)
 [![Prose](https://github.com/alrayyes/org-roam-to-obsidian/actions/workflows/prose.yml/badge.svg?branch=main)](https://github.com/alrayyes/org-roam-to-obsidian/actions/workflows/prose.yml)
 [![Docker](https://github.com/alrayyes/org-roam-to-obsidian/actions/workflows/docker.yml/badge.svg?branch=main)](https://github.com/alrayyes/org-roam-to-obsidian/actions/workflows/docker.yml)

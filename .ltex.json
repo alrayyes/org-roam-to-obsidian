@@ -17,6 +17,7 @@
       "markdownlint",
       "ruff",
       "pytest",
+      "pytest-cov",
       "xfail",
       "xfails",
       "Dependabot",
@@ -38,7 +39,8 @@
       "filesystem",
       "Quartz",
       "defaultDateType",
-      "lastmod"
+      "lastmod",
+      "Codecov"
     ]
   },
   "ltex.disabledRules": {

@@ -12,6 +12,9 @@ testpaths = ["tests"]
 # to be on the path for `import convert` to resolve.
 pythonpath = ["."]
 
+[tool.coverage.run]
+source = ["convert"]
+
 [tool.ruff]
 line-length = 100
 target-version = "py314"
