@@ -10,8 +10,11 @@ updates:
       prefix-development: "chore"
       include: "scope"
 
-  # npm/bun dependencies
-  - package-ecosystem: "npm"
+  # bun dependencies. Not "npm" - that ecosystem only knows how to
+  # regenerate package-lock.json/yarn.lock/pnpm-lock.yaml, so it left
+  # bun.lock stale on every bump and broke every job that runs
+  # `bun install --frozen-lockfile` (#103).
+  - package-ecosystem: "bun"
     directory: "/"
     schedule:
       interval: "weekly"
