@@ -44,3 +44,4 @@ filesystem
 Quartz
 defaultDateType
 lastmod
+Codecov

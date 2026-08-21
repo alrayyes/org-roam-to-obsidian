@@ -12,7 +12,7 @@ Running the converter needs Python and nothing else. Working on it needs:
 
 - **[bun](https://bun.sh)** for the Node-shaped tooling: commitlint, Biome, Prettier,
   markdownlint-cli2 and lefthook. Not npm. The lockfile is `bun.lock`.
-- **ruff** and **pytest**, both pinned in `requirements-dev.txt`.
+- **ruff**, **pytest** and **pytest-cov**, all pinned in `requirements-dev.txt`.
 - **[Vale](https://vale.sh)**, optional. The hooks skip it when it isn't on your `PATH`, and CI
   runs it either way.
 
@@ -56,6 +56,10 @@ what the code happens to do. The marker is strict, so a test that starts passing
 by accident fails the build until someone removes its marker.
 
 The suite runs on `pre-push`, and in CI against Python 3.14.
+
+CI also collects coverage with `pytest-cov` and uploads it to
+[Codecov](https://codecov.io/gh/alrayyes/org-roam-to-obsidian). Run
+`pytest --cov --cov-report=term` locally to see the same numbers.
 
 ## Git hooks
 
