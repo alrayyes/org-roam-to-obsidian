@@ -55,7 +55,7 @@ When you fix the bug, delete the marker. Don't edit the expectation to match
 what the code happens to do. The marker is strict, so a test that starts passing
 by accident fails the build until someone removes its marker.
 
-The suite runs on `pre-push`, and in CI against Python 3.8 and 3.14.
+The suite runs on `pre-push`, and in CI against Python 3.14.
 
 ## Git hooks
 
