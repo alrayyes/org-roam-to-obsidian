@@ -1,12 +1,12 @@
 {
   "name": "org-roam-to-obsidian",
-  "version": "3.7.1",
+  "version": "3.7.2",
   "description": "Convert org-roam notes to Obsidian markdown format",
   "private": true,
   "devDependencies": {
     "@biomejs/biome": "2.5.8",
     "@commitlint/cli": "21.2.2",
-    "@commitlint/config-conventional": "21.2.0",
+    "@commitlint/config-conventional": "21.2.2",
     "lefthook": "2.1.10",
     "markdownlint-cli2": "0.23.2",
     "prettier": "3.9.6"
