@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.7.3](https://github.com/alrayyes/org-roam-to-obsidian/compare/v3.7.2...v3.7.3) (2026-08-21)
+
+
+### Bug Fixes
+
+* **deps:** bump python from 3.13-alpine to 3.14-alpine ([#100](https://github.com/alrayyes/org-roam-to-obsidian/issues/100)) ([fab6817](https://github.com/alrayyes/org-roam-to-obsidian/commit/fab68177733b41daff4399cb99a417dbc53c22ba))
+
 ## [3.7.2](https://github.com/alrayyes/org-roam-to-obsidian/compare/v3.7.1...v3.7.2) (2026-08-21)
 
 
