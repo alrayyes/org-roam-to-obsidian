@@ -38,7 +38,8 @@
       "filesystem",
       "Quartz",
       "defaultDateType",
-      "lastmod"
+      "lastmod",
+      "Codecov"
     ]
   },
   "ltex.disabledRules": {
