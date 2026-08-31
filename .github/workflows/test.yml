@@ -27,7 +27,14 @@ jobs:
       - name: Run tests
         run: pytest --cov --cov-report=xml
 
+      # GitHub doesn't pass repository secrets to a Dependabot-triggered
+      # pull_request run, so CODECOV_TOKEN resolves empty there and the
+      # upload fails with "Token required because branch is protected" -
+      # unrelated to whatever the PR actually bumped. The tests themselves
+      # already ran above regardless; only the coverage report upload
+      # needs skipping.
       - name: Upload coverage to Codecov
+        if: github.actor != 'dependabot[bot]'
         uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
