@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.8.2](https://github.com/alrayyes/org-roam-to-obsidian/compare/v3.8.1...v3.8.2) (2026-09-01)
+
+
+### Documentation
+
+* remove the README's stale not-by-design section ([#141](https://github.com/alrayyes/org-roam-to-obsidian/issues/141)) ([6ab6a1b](https://github.com/alrayyes/org-roam-to-obsidian/commit/6ab6a1b59be81e3978a00ef979168bdb3747b0a4)), closes [#140](https://github.com/alrayyes/org-roam-to-obsidian/issues/140)
+
 ## [3.8.1](https://github.com/alrayyes/org-roam-to-obsidian/compare/v3.8.0...v3.8.1) (2026-09-01)
 
 
