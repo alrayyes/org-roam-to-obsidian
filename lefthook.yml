@@ -20,9 +20,18 @@ pre-commit:
     # Style advice, reported and never fixed automatically. Skipped rather than
     # failed when Vale is not installed, so a contributor without it can still
     # commit; CI has the same check and cannot be skipped.
+    #
+    # `vale {staged_files}` passes explicit filenames, which bypasses the
+    # --glob exclusion `lint:prose` uses (and .vale.ini's own per-file
+    # BasedOnStyles sections don't actually suppress checks — see #150) — so
+    # generated/vendored paths need excluding here too, or a commit touching
+    # them fails on prose issues in text nobody here wrote.
     vale:
       glob: "*.md"
-      run: vale {staged_files}
+      run: >-
+        files=$(printf '%s\n' {staged_files} | grep -vE
+        '^(CHANGELOG\.md|openspec/specs/|\.claude/commands/opsx/|\.claude/skills/openspec-)');
+        [ -z "$files" ] || vale $files
       skip:
         - run: "! command -v vale > /dev/null"
     prettier-yaml:

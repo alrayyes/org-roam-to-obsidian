@@ -5,6 +5,10 @@
 # reformatting it here would show up as noise in the next release diff.
 CHANGELOG.md
 
+# Vendored by `openspec init` itself, not authored here.
+.claude/commands/opsx/
+.claude/skills/openspec-*/
+
 # Biome owns every file type it supports. Prettier is here to fill the gaps,
 # and the gaps are Markdown and YAML. Listing the rest here means nobody later
 # mistakes Prettier's presence for permission to hand it the JavaScript, and
