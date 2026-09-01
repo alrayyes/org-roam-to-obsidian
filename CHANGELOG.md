@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.9.1](https://github.com/alrayyes/org-roam-to-obsidian/compare/v3.9.0...v3.9.1) (2026-09-01)
+
+
+### Bug Fixes
+
+* **ci:** give release-please a real token instead of GITHUB_TOKEN ([#149](https://github.com/alrayyes/org-roam-to-obsidian/issues/149)) ([c7f0902](https://github.com/alrayyes/org-roam-to-obsidian/commit/c7f09021a4843e0fc3e9afa3b9cf9ee46464e9f3)), closes [#146](https://github.com/alrayyes/org-roam-to-obsidian/issues/146)
+
 ## [3.9.0](https://github.com/alrayyes/org-roam-to-obsidian/compare/v3.8.2...v3.9.0) (2026-09-01)
 
 
