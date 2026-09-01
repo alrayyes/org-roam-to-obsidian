@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.9.2](https://github.com/alrayyes/org-roam-to-obsidian/compare/v3.9.1...v3.9.2) (2026-09-01)
+
+
+### Bug Fixes
+
+* **ci:** make vale.ini's per-file exclusions actually exclude ([#153](https://github.com/alrayyes/org-roam-to-obsidian/issues/153)) ([8221d06](https://github.com/alrayyes/org-roam-to-obsidian/commit/8221d06927b670cb1783a5ffdce7ff09f8f739dd)), closes [#150](https://github.com/alrayyes/org-roam-to-obsidian/issues/150)
+
 ## [3.9.1](https://github.com/alrayyes/org-roam-to-obsidian/compare/v3.9.0...v3.9.1) (2026-09-01)
 
 
