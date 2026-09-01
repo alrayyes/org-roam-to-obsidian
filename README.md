@@ -83,6 +83,17 @@ docker run --rm --user "$(id -u):$(id -g)" \
 
 `latest` follows `main`; released versions are tagged `3`, `3.2` and `3.2.0`.
 
+### Nix / NixOS
+
+```bash
+nix run github:alrayyes/org-roam-to-obsidian -- --help
+```
+
+Or add it as a flake input, or `nix profile install
+github:alrayyes/org-roam-to-obsidian` to install it into your profile. Builds
+straight from this repo's own `flake.nix` — no nixpkgs submission, so
+nothing to wait on there.
+
 That's the whole installation. If you're going to work on the converter rather than run it, the
 virtual environment, the linters and the git hooks are all in
 [CONTRIBUTING.md](CONTRIBUTING.md).
