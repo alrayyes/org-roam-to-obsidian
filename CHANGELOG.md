@@ -1,5 +1,18 @@
 # Changelog
 
+## [3.8.1](https://github.com/alrayyes/org-roam-to-obsidian/compare/v3.8.0...v3.8.1) (2026-09-01)
+
+
+### Bug Fixes
+
+* **nix:** keep flake.nix's version in sync via release-please ([#139](https://github.com/alrayyes/org-roam-to-obsidian/issues/139)) ([ace091f](https://github.com/alrayyes/org-roam-to-obsidian/commit/ace091f5629c9347a4eb0b90b1ad1f61b15bb3c4)), closes [#129](https://github.com/alrayyes/org-roam-to-obsidian/issues/129)
+
+
+### Documentation
+
+* add issue forms and a pull request template ([#132](https://github.com/alrayyes/org-roam-to-obsidian/issues/132)) ([b50931e](https://github.com/alrayyes/org-roam-to-obsidian/commit/b50931e9abc3ecd6a4874ca3805497fe740025d8)), closes [#122](https://github.com/alrayyes/org-roam-to-obsidian/issues/122)
+* add SECURITY.md ([#131](https://github.com/alrayyes/org-roam-to-obsidian/issues/131)) ([14cac87](https://github.com/alrayyes/org-roam-to-obsidian/commit/14cac8750a6780d17ef3175e9ea1694573cf0776)), closes [#121](https://github.com/alrayyes/org-roam-to-obsidian/issues/121)
+
 ## [3.8.0](https://github.com/alrayyes/org-roam-to-obsidian/compare/v3.7.3...v3.8.0) (2026-09-01)
 
 
