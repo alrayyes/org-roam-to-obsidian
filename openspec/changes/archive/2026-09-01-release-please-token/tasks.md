@@ -11,4 +11,4 @@
 
 ## 3. Verify the fix holds
 
-- [ ] 3.1 On the next release-please PR after this ships, verify its checks run with no manual approval and its merge produces a real tag + GitHub Release with no manual backfill
+- [x] 3.1 On the next release-please PR after this ships, verify its checks run with no manual approval and its merge produces a real tag + GitHub Release with no manual backfill — confirmed on PR #152 (`chore(main): release 3.9.1`): all checks `SUCCESS`, no `action_required`, `v3.9.1` tagged and released with no manual intervention
