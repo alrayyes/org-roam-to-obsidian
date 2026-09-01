@@ -64,7 +64,7 @@ After conversion, every written note SHALL be checked against the set of files a
 
 #### Scenario: A link with no matching file is reported
 
-- **WHEN** a note links to `[[Gravity Falls]]` and no written file is titled `Gravity Falls`
+- **WHEN** a note's `[[id:...][Gravity Falls]]` link resolves to no known ID, so its written output carries the wikilink `[[Gravity Falls]]`, and no written file is titled `Gravity Falls`
 - **THEN** the run's output names the source file and `[[Gravity Falls]]` as pointing nowhere
 
 #### Scenario: A link matching a written file is not reported
@@ -74,7 +74,7 @@ After conversion, every written note SHALL be checked against the set of files a
 
 #### Scenario: A link resolved by an alias is not reported
 
-- **WHEN** a note's filename was sanitized (for example `Box<T>` written as `Box T.md`) and carries `Box<T>` as an alias, and another note links `[[Box<T>]]`
+- **WHEN** a note's filename was sanitized (for example `Box<T>` written as `Box T.md`) and carries `Box<T>` as an alias, and another note's written output carries the wikilink `[[Box<T>]]`
 - **THEN** the run's output does not report that link as pointing nowhere
 
 #### Scenario: A bracket pair inside a code block is not treated as a link
@@ -93,12 +93,12 @@ Once every note is written and the full set of resolvable titles and aliases is 
 
 #### Scenario: A dead link is unwrapped by default
 
-- **WHEN** a note contains `[[Gravity Falls]]` and no written file is titled `Gravity Falls`, and `--keep-dead-links` is not passed
+- **WHEN** a note's `[[id:...][Gravity Falls]]` link resolves to no known ID, no written file is titled `Gravity Falls`, and `--keep-dead-links` is not passed
 - **THEN** the written file contains `Gravity Falls` with the `[[` and `]]` removed, and the run's report says the link syntax was removed and the words kept
 
 #### Scenario: `--keep-dead-links` leaves the file untouched
 
-- **WHEN** the same note is converted with `--keep-dead-links`
+- **WHEN** the same note (whose link resolves to no known ID and no matching file) is converted with `--keep-dead-links`
 - **THEN** the written file still contains `[[Gravity Falls]]` unchanged, and the run's report says Obsidian will show it as unresolved
 
 #### Scenario: Unwrapping skips fenced code
