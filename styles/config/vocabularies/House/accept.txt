@@ -50,3 +50,13 @@ defaultDateType
 lastmod
 Codecov
 nixpkgs
+boolean
+unsanitized
+sanitization
+filename('s)?
+erroring
+untimestamped
+unrequested
+unreferenced
+blockquote(s)?
+src

@@ -47,7 +47,14 @@
       "defaultDateType",
       "lastmod",
       "Codecov",
-      "nixpkgs"
+      "nixpkgs",
+      "unsanitized",
+      "untimestamped",
+      "unrequested",
+      "erroring",
+      "unreferenced",
+      "blockquote",
+      "blockquotes"
     ]
   },
   "ltex.disabledRules": {
