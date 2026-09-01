@@ -40,7 +40,8 @@
       "Quartz",
       "defaultDateType",
       "lastmod",
-      "Codecov"
+      "Codecov",
+      "nixpkgs"
     ]
   },
   "ltex.disabledRules": {

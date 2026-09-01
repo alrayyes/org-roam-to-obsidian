@@ -45,3 +45,4 @@ Quartz
 defaultDateType
 lastmod
 Codecov
+nixpkgs
