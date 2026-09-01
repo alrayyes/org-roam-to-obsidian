@@ -16,8 +16,12 @@ jobs:
        startsWith(github.event.pull_request.title, 'chore(main): release')) ||
       github.event.pull_request.user.login == 'dependabot[bot]'
     steps:
+      # Same GITHUB_TOKEN anti-recursion issue as release.yml: a merge
+      # performed with the default token doesn't reliably trigger release.yml's
+      # own push-to-main listener afterward, which is how v3.8.2 and v3.9.0
+      # both ended up merged with no git tag or GitHub Release to show for it.
       - name: Enable auto-merge
         run: gh pr merge --auto --squash "$PR_URL"
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.RELEASE_TOKEN }}
