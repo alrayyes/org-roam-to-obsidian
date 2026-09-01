@@ -33,6 +33,12 @@ pre-commit:
       glob: "*.{json,jsonc}"
       run: bunx biome check --write --no-errors-on-unmatched {staged_files}
       stage_fixed: true
+    # hadolint reads the Dockerfile as text and never checks it actually
+    # builds. Scoped to the Dockerfile plus the one file it COPYs, so a commit
+    # touching neither is skipped entirely rather than paying for a build.
+    docker-build:
+      glob: "{Dockerfile,convert.py}"
+      run: docker build -t org-roam-to-obsidian:pre-commit-check . && docker rmi org-roam-to-obsidian:pre-commit-check
 
 commit-msg:
   commands:
@@ -63,3 +69,5 @@ pre-push:
       run: bun run lint:yaml
     biome:
       run: bun run lint:json
+    docker-build:
+      run: docker build -t org-roam-to-obsidian:pre-push-check . && docker rmi org-roam-to-obsidian:pre-push-check
