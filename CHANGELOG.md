@@ -1,5 +1,17 @@
 # Changelog
 
+## [3.8.0](https://github.com/alrayyes/org-roam-to-obsidian/compare/v3.7.3...v3.8.0) (2026-09-01)
+
+
+### Features
+
+* add a Nix flake for building and running the converter ([#115](https://github.com/alrayyes/org-roam-to-obsidian/issues/115)) ([1e9c298](https://github.com/alrayyes/org-roam-to-obsidian/commit/1e9c298bb68c8489bb52da4bea1e4145f8e5e2ab))
+
+
+### Bug Fixes
+
+* **ci:** skip the Codecov upload on Dependabot PRs ([#112](https://github.com/alrayyes/org-roam-to-obsidian/issues/112)) ([80c9796](https://github.com/alrayyes/org-roam-to-obsidian/commit/80c97969a5f088e9668ee6dbadc4dd0796bcde2b))
+
 ## [3.7.3](https://github.com/alrayyes/org-roam-to-obsidian/compare/v3.7.2...v3.7.3) (2026-08-21)
 
 
