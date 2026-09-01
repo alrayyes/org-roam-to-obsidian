@@ -27,6 +27,26 @@ jobs:
       - name: Run ruff check
         run: ruff check .
 
+  pip-audit:
+    name: pip-audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.14"
+
+      # convert.py itself has no dependencies outside the standard library, so
+      # the only thing to audit is the pinned dev tooling in
+      # requirements-dev.txt.
+      - name: Install pip-audit
+        run: pip install pip-audit==2.10.1
+
+      - name: Run pip-audit
+        run: pip-audit -r requirements-dev.txt
+
   markdown:
     name: Markdown
     runs-on: ubuntu-latest
