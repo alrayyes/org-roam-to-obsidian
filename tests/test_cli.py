@@ -343,6 +343,53 @@ def test_the_report_counts_every_broken_link(tmp_path):
     assert "2 links point nowhere" in output
 
 
+def test_a_dead_link_is_unwrapped_by_default(tmp_path):
+    """Obsidian would otherwise show [[Gravity Falls]] as an unresolved link."""
+    source = tmp_path / "slip-box"
+    source.mkdir()
+    (source / "20200101000000-a.org").write_text(
+        "#+title: Source Note\n\nSee [[id:missing-id][Gravity Falls]].\n", encoding="utf-8"
+    )
+    target = tmp_path / "out"
+
+    output = run_convert("-i", str(source), "-o", str(target))
+
+    written = (target / "Source Note.md").read_text(encoding="utf-8")
+    assert "[[Gravity Falls]]" not in written
+    assert "See Gravity Falls." in written
+    assert "removed and the words kept" in output
+
+
+def test_keep_dead_links_leaves_the_file_untouched(tmp_path):
+    source = tmp_path / "slip-box"
+    source.mkdir()
+    (source / "20200101000000-a.org").write_text(
+        "#+title: Source Note\n\nSee [[id:missing-id][Gravity Falls]].\n", encoding="utf-8"
+    )
+    target = tmp_path / "out"
+
+    output = run_convert("-i", str(source), "-o", str(target), "--keep-dead-links")
+
+    written = (target / "Source Note.md").read_text(encoding="utf-8")
+    assert "[[Gravity Falls]]" in written
+    assert "shows these as unresolved" in output
+
+
+def test_unwrapping_skips_a_code_block(tmp_path):
+    """[[x]] in a JavaScript array is not a link and unwrapping must not touch it."""
+    source = tmp_path / "slip-box"
+    source.mkdir()
+    (source / "20200101000000-a.org").write_text(
+        "#+title: Code\n\n#+begin_src js\nflatMap((x) => [[x]])\n#+end_src\n", encoding="utf-8"
+    )
+    target = tmp_path / "out"
+
+    run_convert("-i", str(source), "-o", str(target))
+
+    written = (target / "Code.md").read_text(encoding="utf-8")
+    assert "[[x]]" in written
+
+
 def test_modified_comes_from_the_org_file(tmp_path):
     """Quartz reads `modified`; without it a site dates every page at export time."""
     import os
