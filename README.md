@@ -277,11 +277,3 @@ By design:
 - A standard org-roam file layout is assumed: one directory of `.org` files, each carrying its
   own `:ID:` inside a `:PROPERTIES:` block.
 - Conversion is best-effort. Complex org-mode constructs may not survive intact.
-
-Not by design. Some of the features listed at the top of this file don't work today. Each one has
-a test in the suite marked `xfail` and an open issue:
-
-- A property value containing a colon gets split on it, turning `roam_refs: https://example.com`
-  into a two-item list ([#17](https://github.com/alrayyes/org-roam-to-obsidian/issues/17)).
-- A Table of Contents loses its heading but keeps its entries
-  ([#18](https://github.com/alrayyes/org-roam-to-obsidian/issues/18)).
