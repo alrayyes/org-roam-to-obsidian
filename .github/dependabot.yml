@@ -33,6 +33,16 @@ updates:
       prefix-development: "chore"
       include: "scope"
 
+  # flake.nix's own inputs (nixpkgs, flake-utils), pinned in flake.lock.
+  - package-ecosystem: "nix"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "chore"
+      prefix-development: "chore"
+      include: "scope"
+
   # The Dockerfile's base image (python:3.13-alpine, digest-pinned). Ships
   # in the published container, unlike the dev-tooling entries above.
   - package-ecosystem: "docker"
