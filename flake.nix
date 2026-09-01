@@ -19,9 +19,10 @@
         # nixos-unstable's python3 is already 3.14, matching this repo's own
         # `requires-python = ">=3.14"` — no override needed.
         python3 = pkgs.python3;
-        # Kept in sync with pyproject.toml's [project].version by hand —
-        # release-please owns that file, not this one.
-        version = "3.7.3";
+        # release-please's generic updater keeps this in sync with
+        # pyproject.toml's [project].version via the marker comment below —
+        # see release-please-config.json's extra-files entry for this file.
+        version = "3.8.0"; # x-release-please-version
       in
       {
         packages.default = python3.pkgs.buildPythonApplication {
