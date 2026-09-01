@@ -23,3 +23,6 @@ pytest writes inside its own cache, so this is what keeps them out of it.
 # Vale style packages, fetched by `vale sync`. styles/config/ is ours and stays.
 styles/Google/
 styles/proselint/
+
+# Claude Code's own per-session runtime lock, not project state.
+.claude/scheduled_tasks.lock

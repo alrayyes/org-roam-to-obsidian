@@ -13,6 +13,8 @@ GitHub
 Dependabot
 hadolint
 AUR
+makepkg
+backfill(ed|s)?
 bun
 bunx
 lefthook
@@ -27,7 +29,7 @@ xfail
 release-please
 YAML
 CLI
-repo
+repo(s)?
 subprocess
 reflows
 subprocesses
