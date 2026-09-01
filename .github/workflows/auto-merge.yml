@@ -11,9 +11,11 @@ permissions:
 jobs:
   auto-merge:
     runs-on: ubuntu-latest
+    # release-please authors its PR as whichever account holds RELEASE_TOKEN
+    # (alrayyes here, not github-actions[bot] -- see #146/#149), so the title
+    # is the stable signal for a release PR now, not the author.
     if: |
-      (github.event.pull_request.user.login == 'github-actions[bot]' &&
-       startsWith(github.event.pull_request.title, 'chore(main): release')) ||
+      startsWith(github.event.pull_request.title, 'chore(main): release') ||
       github.event.pull_request.user.login == 'dependabot[bot]'
     steps:
       # Same GITHUB_TOKEN anti-recursion issue as release.yml: a merge
