@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.9.0](https://github.com/alrayyes/org-roam-to-obsidian/compare/v3.8.2...v3.9.0) (2026-09-01)
+
+
+### Features
+
+* publish an AUR package ([#147](https://github.com/alrayyes/org-roam-to-obsidian/issues/147)) ([48bddb0](https://github.com/alrayyes/org-roam-to-obsidian/commit/48bddb0077f23bde546ad89a2b8daa33125fa168))
+
 ## [3.8.2](https://github.com/alrayyes/org-roam-to-obsidian/compare/v3.8.1...v3.8.2) (2026-09-01)
 
 
