@@ -22,6 +22,7 @@
       "xfails",
       "Dependabot",
       "hadolint",
+      "AUR",
       "release-please",
       "subprocess",
       "subprocesses",

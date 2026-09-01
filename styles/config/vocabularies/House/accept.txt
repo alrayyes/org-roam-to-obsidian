@@ -12,6 +12,7 @@ Python
 GitHub
 Dependabot
 hadolint
+AUR
 bun
 bunx
 lefthook
