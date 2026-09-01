@@ -70,7 +70,7 @@ everyone gets the same version of them:
 - **pre-commit**: Fixes staged files in place. `ruff format` and `ruff check --fix` on Python,
   `prettier --write` then `markdownlint-cli2 --fix` on Markdown, `prettier --write` on YAML,
   `biome check --write` on JSON, and a `docker build` when `Dockerfile` or `convert.py` is staged
-  — hadolint only reads the Dockerfile as text, so nothing else here proves the image still builds
+  — hadolint only reads the `Dockerfile` as text, so nothing else here proves the image still builds
 - **commit-msg**: Validates commit messages with [commitlint](https://commitlint.js.org/) following [Conventional Commits](https://www.conventionalcommits.org/)
 - **pre-push**: Runs `pytest`, an unconditional `docker build`, then re-runs all of the above across
   the whole repository in check mode, so nothing reaches the remote that CI would reject

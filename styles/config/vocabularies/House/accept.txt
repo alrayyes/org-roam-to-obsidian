@@ -11,6 +11,7 @@ Markdown
 Python
 GitHub
 Dependabot
+hadolint
 bun
 bunx
 lefthook
