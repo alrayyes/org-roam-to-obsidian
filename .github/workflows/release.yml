@@ -13,8 +13,16 @@ jobs:
   release-please:
     runs-on: ubuntu-latest
     steps:
+      # The default GITHUB_TOKEN authors this PR as github-actions[bot], and
+      # GitHub's anti-recursion guard on GITHUB_TOKEN-triggered events keeps
+      # that bot's own PR checks stuck at "requires approval from a
+      # maintainer" — every release, not just the first. A real-identity PAT
+      # (RELEASE_TOKEN, fine-grained, this repo only, Contents + Pull
+      # requests: write) sidesteps it entirely.
       - uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
         id: release
+        with:
+          token: ${{ secrets.RELEASE_TOKEN }}
 
       - name: Checkout code
         if: ${{ steps.release.outputs.release_created }}
