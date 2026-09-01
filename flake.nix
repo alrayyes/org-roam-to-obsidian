@@ -22,7 +22,7 @@
         # release-please's generic updater keeps this in sync with
         # pyproject.toml's [project].version via the marker comment below —
         # see release-please-config.json's extra-files entry for this file.
-        version = "3.8.0"; # x-release-please-version
+        version = "3.8.1"; # x-release-please-version
       in
       {
         packages.default = python3.pkgs.buildPythonApplication {
