@@ -158,3 +158,27 @@ docs: update installation instructions
 ```
 
 Configuration is in `.commitlintrc.json` and follows `@commitlint/config-conventional`.
+
+## Releasing the AUR package
+
+`PKGBUILD` and `.SRCINFO` at the repo root track the AUR package
+(`aur.archlinux.org/org-roam-to-obsidian`), not the version installed by
+`git clone`. After release-please cuts a new tag, update them by hand:
+
+```bash
+# Bump pkgver in PKGBUILD to the new release, then:
+updpkgsums              # recomputes sha256sums against the new tag's tarball
+makepkg --printsrcinfo > .SRCINFO
+git commit -am "chore: bump AUR package to vX.Y.Z"
+```
+
+Then push the pair to the AUR repo itself — a separate git remote, not this
+one:
+
+```bash
+git clone ssh://aur@aur.archlinux.org/org-roam-to-obsidian.git /tmp/aur-org-roam-to-obsidian
+cp PKGBUILD .SRCINFO /tmp/aur-org-roam-to-obsidian/
+cd /tmp/aur-org-roam-to-obsidian && git commit -am "chore: bump to vX.Y.Z" && git push
+```
+
+`makepkg -f` locally proves the package still builds before either push.

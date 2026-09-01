@@ -16,3 +16,5 @@ bun.lock
 package.json
 pyproject.toml
 requirements-dev.txt
+PKGBUILD
+.SRCINFO
