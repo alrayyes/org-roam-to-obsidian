@@ -13,15 +13,18 @@ jobs:
   release-please:
     runs-on: ubuntu-latest
     steps:
-      # RELEASE_TOKEN (a real-identity PAT) used to sit here instead of the
-      # default GITHUB_TOKEN, worked around as a GITHUB_TOKEN anti-recursion
-      # issue in #149. backup-git-repos and washy-washy-cli run this same
-      # release-please + native-auto-merge pipeline on plain GITHUB_TOKEN
-      # with no PAT and no stuck approvals, and this repo's own branch
-      # protection has required approving reviews at 0 -- there's nothing
-      # left for a PAT to be working around. Testing the removal here.
+      # RELEASE_TOKEN, not the default GITHUB_TOKEN: a release PR authored
+      # by GITHUB_TOKEN sits at "action_required" with zero jobs run, since
+      # GitHub's fork-PR-workflow approval gate treats a token-authored PR
+      # like an outside contributor's even on the repo's own branch. #167
+      # tested removing this based on backup-git-repos/washy-washy-cli
+      # working fine on GITHUB_TOKEN alone -- reverting now that movie-planner
+      # and tempus-fugit both independently confirmed the same action_required
+      # wall those two repos happen not to hit, for reasons still unconfirmed.
       - uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
         id: release
+        with:
+          token: ${{ secrets.RELEASE_TOKEN }}
 
       - name: Checkout code
         if: ${{ steps.release.outputs.release_created }}
