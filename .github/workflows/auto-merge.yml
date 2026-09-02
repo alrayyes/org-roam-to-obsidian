@@ -11,31 +11,15 @@ permissions:
 jobs:
   auto-merge:
     runs-on: ubuntu-latest
-    # release-please authors its PR as whichever account holds RELEASE_TOKEN
-    # (alrayyes here, not github-actions[bot] -- see #146/#149), so the title
-    # is the stable signal for a release PR now, not the author.
+    # release-please now authors its PR as github-actions[bot] again (no more
+    # RELEASE_TOKEN -- see release.yml), but the title stays the signal here
+    # rather than switching back to actor, since it's already proven stable
+    # across #146/#149 and needs no change to test the token removal.
     if: |
       startsWith(github.event.pull_request.title, 'chore(main): release') ||
       github.event.pull_request.user.login == 'dependabot[bot]'
     steps:
-      # Same GITHUB_TOKEN anti-recursion issue as release.yml: a merge
-      # performed with the default token doesn't reliably trigger release.yml's
-      # own push-to-main listener afterward, which is how v3.8.2 and v3.9.0
-      # both ended up merged with no git tag or GitHub Release to show for it.
-      - name: Enable auto-merge for the release PR
-        if: "startsWith(github.event.pull_request.title, 'chore(main): release')"
-        run: gh pr merge --auto --squash "$PR_URL"
-        env:
-          PR_URL: ${{ github.event.pull_request.html_url }}
-          GH_TOKEN: ${{ secrets.RELEASE_TOKEN }}
-
-      # A Dependabot-triggered run gets no repo secrets at all -- RELEASE_TOKEN
-      # comes through blank here, which is why this used to fail with "set
-      # the GH_TOKEN environment variable" on every dependency bump (#162).
-      # GITHUB_TOKEN works instead: GitHub grants it elevated permissions for
-      # pull_request events actor'd by dependabot[bot] specifically.
-      - name: Enable auto-merge for a Dependabot PR
-        if: github.event.pull_request.user.login == 'dependabot[bot]'
+      - name: Enable auto-merge
         run: gh pr merge --auto --squash "$PR_URL"
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
