@@ -22,8 +22,21 @@ jobs:
       # performed with the default token doesn't reliably trigger release.yml's
       # own push-to-main listener afterward, which is how v3.8.2 and v3.9.0
       # both ended up merged with no git tag or GitHub Release to show for it.
-      - name: Enable auto-merge
+      - name: Enable auto-merge for the release PR
+        if: "startsWith(github.event.pull_request.title, 'chore(main): release')"
         run: gh pr merge --auto --squash "$PR_URL"
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
           GH_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+
+      # A Dependabot-triggered run gets no repo secrets at all -- RELEASE_TOKEN
+      # comes through blank here, which is why this used to fail with "set
+      # the GH_TOKEN environment variable" on every dependency bump (#162).
+      # GITHUB_TOKEN works instead: GitHub grants it elevated permissions for
+      # pull_request events actor'd by dependabot[bot] specifically.
+      - name: Enable auto-merge for a Dependabot PR
+        if: github.event.pull_request.user.login == 'dependabot[bot]'
+        run: gh pr merge --auto --squash "$PR_URL"
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
