@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.9.3](https://github.com/alrayyes/org-roam-to-obsidian/compare/v3.9.2...v3.9.3) (2026-09-02)
+
+
+### Bug Fixes
+
+* **ci:** use GITHUB_TOKEN for Dependabot auto-merge, not RELEASE_TOKEN ([#164](https://github.com/alrayyes/org-roam-to-obsidian/issues/164)) ([423f6d7](https://github.com/alrayyes/org-roam-to-obsidian/commit/423f6d732afcd144b8842e10bc22ca128a983100)), closes [#163](https://github.com/alrayyes/org-roam-to-obsidian/issues/163)
+
 ## [3.9.2](https://github.com/alrayyes/org-roam-to-obsidian/compare/v3.9.1...v3.9.2) (2026-09-01)
 
 
