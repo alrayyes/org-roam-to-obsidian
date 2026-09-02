@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.9.4](https://github.com/alrayyes/org-roam-to-obsidian/compare/v3.9.3...v3.9.4) (2026-09-02)
+
+
+### Reverts
+
+* **ci:** restore RELEASE_TOKEN, drop-release-token regressed elsewhere ([#169](https://github.com/alrayyes/org-roam-to-obsidian/issues/169)) ([3428842](https://github.com/alrayyes/org-roam-to-obsidian/commit/342884226a7ed538840af54d397977bf7b9fcb08)), closes [#168](https://github.com/alrayyes/org-roam-to-obsidian/issues/168)
+
 ## [3.9.3](https://github.com/alrayyes/org-roam-to-obsidian/compare/v3.9.2...v3.9.3) (2026-09-02)
 
 
