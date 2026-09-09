@@ -3,7 +3,7 @@
 # whole image; a builder stage would only add a layer that produces no artefact.
 # Pinned to the multi-platform index digest, not a single image digest. Pin the
 # amd64 manifest instead and the arm64 build silently uses the wrong base.
-FROM python:3.14-alpine@sha256:3f818d6811ff5f3f2b5e5d836df3d25c2dd2e588d3b4981338a8ba17e422f74f
+FROM python:3.14-alpine@sha256:c6ead215bfd31f1e433d968853b7a769989117115b728874824e6c0a27cb96fc
 
 # Read by the label below rather than hardcoded, so the release workflow stamps
 # the tag it is building without this file changing every release.
