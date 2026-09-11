@@ -1,6 +1,6 @@
 {
   "name": "org-roam-to-obsidian",
-  "version": "3.9.4",
+  "version": "3.9.5",
   "description": "Convert org-roam notes to Obsidian markdown format",
   "private": true,
   "devDependencies": {
@@ -10,6 +10,11 @@
     "lefthook": "2.1.12",
     "markdownlint-cli2": "0.23.2",
     "prettier": "3.9.6"
+  },
+  "overrides": {
+    "fast-uri": "3.1.7",
+    "js-yaml": "5.2.2",
+    "smol-toml": "1.7.2"
   },
   "trustedDependencies": [
     "lefthook"
