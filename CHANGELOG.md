@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.9.5](https://github.com/alrayyes/org-roam-to-obsidian/compare/v3.9.4...v3.9.5) (2026-09-11)
+
+
+### Bug Fixes
+
+* **deps:** bump python from `3f818d6` to `c6ead21` ([#174](https://github.com/alrayyes/org-roam-to-obsidian/issues/174)) ([db37494](https://github.com/alrayyes/org-roam-to-obsidian/commit/db374940cd80378fb09a917a35f5ad70d63be93b))
+* **deps:** override fast-uri, js-yaml, smol-toml for high-severity advisories ([#180](https://github.com/alrayyes/org-roam-to-obsidian/issues/180)) ([feaf303](https://github.com/alrayyes/org-roam-to-obsidian/commit/feaf3031cea33eb3788c95e92c6178fd4c9ab804))
+
 ## [3.9.4](https://github.com/alrayyes/org-roam-to-obsidian/compare/v3.9.3...v3.9.4) (2026-09-02)
 
 
