@@ -6,9 +6,17 @@ on:
   pull_request:
     branches: [main]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
 jobs:
   pytest:
     name: Pytest
+    timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -25,7 +33,7 @@ jobs:
         run: pip install -r requirements-dev.txt
 
       - name: Run tests
-        run: pytest --cov --cov-report=xml --junitxml=junit.xml
+        run: pytest --cov --cov-report=xml --cov-report=html:htmlcov --junitxml=junit.xml
 
       # GitHub doesn't pass repository secrets to a Dependabot-triggered
       # pull_request run, so CODECOV_TOKEN resolves empty there and the
@@ -51,3 +59,97 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: junit.xml
           report_type: test_results
+
+      # The reports job below publishes these. if-no-files-found: error makes a
+      # missing file fail here rather than ship a site with a hole in it.
+      # .coverage is a hidden file, so it has to be asked for.
+      - name: Upload reports
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: reports
+          path: |
+            junit.xml
+            coverage.xml
+            htmlcov/
+            .coverage
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 7
+
+  # One Pages deployment per repo, so everything published goes through this job.
+  # It assembles site/ on pull requests too, so a broken step fails before the
+  # merge, and deploys only on a push to main, behind a green pytest run.
+  reports:
+    name: Reports
+    needs: pytest
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: ${{ github.event_name == 'push' && 'github-pages' || '' }}
+      url: ${{ github.event_name == 'push' && steps.deployment.outputs.page_url || '' }}
+    steps:
+      - name: Download reports
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: reports
+          path: raw
+
+      - name: Assemble site/reports
+        env:
+          SHA: ${{ github.sha }}
+          REPO: ${{ github.repository }}
+        run: |
+          mkdir -p site/reports/tests site/reports/coverage
+          cp raw/junit.xml site/reports/tests/unit.xml
+          cp raw/coverage.xml site/reports/coverage/coverage.xml
+          cp -r raw/htmlcov/. site/reports/coverage/
+          # Pages drops dotfiles, so the native SQLite file ships under a plain name.
+          cp raw/.coverage site/reports/coverage/coverage.db
+          cat > site/reports/index.html <<EOF
+          <!doctype html>
+          <html lang="en">
+          <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1">
+          <title>Reports</title>
+          </head>
+          <body>
+          <main>
+          <h1>Reports</h1>
+          <p>Commit <a href="https://github.com/${REPO}/commit/${SHA}">${SHA:0:7}</a>, built $(date -u +%Y-%m-%d) UTC.</p>
+          <ul>
+          <li><a href="tests/unit.xml">Test results (JUnit XML)</a></li>
+          <li><a href="coverage/">Coverage (HTML)</a></li>
+          <li><a href="coverage/coverage.xml">Coverage (Cobertura XML)</a></li>
+          <li><a href="coverage/coverage.db">Coverage (coverage.py data file)</a></li>
+          </ul>
+          </main>
+          </body>
+          </html>
+          EOF
+          grep -q '<coverage ' site/reports/coverage/coverage.xml
+
+      - name: Upload Pages artifact
+        if: github.event_name == 'push'
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: site
+
+      - name: Deploy to Pages
+        id: deployment
+        if: github.event_name == 'push'
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
+
+      - name: Check the live coverage.xml
+        if: github.event_name == 'push'
+        env:
+          PAGE_URL: ${{ steps.deployment.outputs.page_url }}
+        run: |
+          curl --fail --silent --show-error --location --retry 6 --retry-delay 10 \
+            --retry-all-errors --output coverage.xml "${PAGE_URL%/}/reports/coverage/coverage.xml"
+          grep -q '<coverage ' coverage.xml
