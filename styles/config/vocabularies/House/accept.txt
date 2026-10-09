@@ -60,3 +60,5 @@ unrequested
 unreferenced
 blockquote(s)?
 src
+JUnit
+Cobertura

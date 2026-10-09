@@ -198,6 +198,16 @@ roam_refs: https://example.com
 - Table of Contents (`:TOC_:` sections)
 - Timestamp filename prefixes, for example `20200613170532-`
 
+## Reports
+
+Every push to `main` publishes the test and coverage reports:
+
+- [Test results](https://apis.ryankes.eu/org-roam-to-obsidian/reports/tests/unit.xml) (JUnit XML)
+- [Coverage](https://apis.ryankes.eu/org-roam-to-obsidian/reports/coverage/) (HTML)
+- [Coverage](https://apis.ryankes.eu/org-roam-to-obsidian/reports/coverage/coverage.xml) (Cobertura XML)
+
+The [index](https://apis.ryankes.eu/org-roam-to-obsidian/reports/) lists them with the commit they describe.
+
 ## License
 
 This project is licensed under the GNU General Public License v3.0 - see the [LICENSE](LICENSE) file for details.
