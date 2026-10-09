@@ -17,14 +17,11 @@ pre-commit:
       glob: "*.md"
       run: bunx prettier --write {staged_files} && bunx markdownlint-cli2 --fix {staged_files}
       stage_fixed: true
-    # Style advice, reported and never fixed automatically. Skipped rather than
-    # failed when Vale is not installed, so a contributor without it can still
-    # commit; CI has the same check and cannot be skipped.
+    # Style advice, reported and never fixed automatically. Fails loudly when
+    # Vale isn't installed: a missing tool must not turn the check into a no-op.
     vale:
       glob: "*.md"
       run: vale {staged_files}
-      skip:
-        - run: "! command -v vale > /dev/null"
     prettier-yaml:
       glob: "*.{yml,yaml}"
       run: bunx prettier --write {staged_files}
@@ -33,12 +30,6 @@ pre-commit:
       glob: "*.{json,jsonc}"
       run: bunx biome check --write --no-errors-on-unmatched {staged_files}
       stage_fixed: true
-    # hadolint reads the Dockerfile as text and never checks it actually
-    # builds. Scoped to the Dockerfile plus the one file it COPYs, so a commit
-    # touching neither is skipped entirely rather than paying for a build.
-    docker-build:
-      glob: "{Dockerfile,convert.py}"
-      run: docker build -t org-roam-to-obsidian:pre-commit-check . && docker rmi org-roam-to-obsidian:pre-commit-check
 
 commit-msg:
   commands:
@@ -63,8 +54,6 @@ pre-push:
     # checked in CI and in the editor over LSP instead.
     vale:
       run: bun run lint:prose
-      skip:
-        - run: "! command -v vale > /dev/null"
     prettier-yaml:
       run: bun run lint:yaml
     biome:

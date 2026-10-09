@@ -13,8 +13,8 @@ Running the converter needs Python and nothing else. Working on it needs:
 - **[bun](https://bun.sh)** for the Node-shaped tooling: commitlint, Biome, Prettier,
   markdownlint-cli2 and lefthook. Not npm. The lockfile is `bun.lock`.
 - **ruff**, **pytest** and **pytest-cov**, all pinned in `requirements-dev.txt`.
-- **[Vale](https://vale.sh)**, optional. The hooks skip it when it isn't on your `PATH`, and CI
-  runs it either way.
+- **[Vale](https://vale.sh)**. The hooks fail when it isn't on your `PATH` rather than skipping
+  it. CI runs it too, but reports instead of blocking.
 
 ## Getting set up
 
@@ -69,10 +69,11 @@ everyone gets the same version of them:
 
 - **pre-commit**: Fixes staged files in place. `ruff format` and `ruff check --fix` on Python,
   `prettier --write` then `markdownlint-cli2 --fix` on Markdown, `prettier --write` on YAML,
-  `biome check --write` on JSON, and a `docker build` when `Dockerfile` or `convert.py` is staged
-  — hadolint only reads the `Dockerfile` as text, so nothing else here proves the image still builds
+  `biome check --write` on JSON. Each command works from the staged files only, and none builds an
+  image or skips because a tool is missing
 - **commit-msg**: Validates commit messages with [commitlint](https://commitlint.js.org/) following [Conventional Commits](https://www.conventionalcommits.org/)
-- **pre-push**: Runs `pytest`, an unconditional `docker build`, then re-runs all of the above across
+- **pre-push**: Runs `pytest`, a `docker build` (hadolint only reads the `Dockerfile` as text, so nothing else
+  proves the image still builds), then re-runs all of the above across
   the whole repository in check mode, so nothing reaches the remote that CI would reject
 
 The hooks and the GitHub Actions workflows run the same commands on purpose. The hook catches a
@@ -108,8 +109,8 @@ instead of the other.
 [Vale](https://vale.sh) checks style: house voice, weasel words, corporate speak. It uses the
 Google and proselint packages, which `vale sync` downloads rather than the repo committing them.
 So install Vale (`yay -S vale` on Arch, `brew install vale` on macOS) and run `vale sync` once
-before `bun run lint:prose` will work. The git hooks run Vale when it's on your `PATH` and quietly
-skip it when it isn't. CI runs it either way and reports rather than blocks, because a merge
+before `bun run lint:prose` will work. The git hooks fail if Vale isn't on your `PATH`, so a missing
+install can't pass everything but CI. CI reports rather than blocks, because a merge
 stopped by an opinion teaches people to reach for `--no-verify`.
 
 [ltex-cli-plus](https://github.com/ltex-plus/ltex-ls-plus) checks mechanics: grammar, spelling and
