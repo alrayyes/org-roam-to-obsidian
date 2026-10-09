@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.9.7](https://github.com/alrayyes/org-roam-to-obsidian/compare/v3.9.6...v3.9.7) (2026-10-09)
+
+
+### Bug Fixes
+
+* **docs:** accept PRs in the Vale vocabulary ([9dd40ad](https://github.com/alrayyes/org-roam-to-obsidian/commit/9dd40add069dae3f3d073bf5b20d9726d98d4c81))
+* **docs:** reword a line LTeX misreads ([674f75f](https://github.com/alrayyes/org-roam-to-obsidian/commit/674f75fd1071f662853d7537334e698c51c23aab))
+
 ## [3.9.6](https://github.com/alrayyes/org-roam-to-obsidian/compare/v3.9.5...v3.9.6) (2026-10-09)
 
 
