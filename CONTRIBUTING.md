@@ -73,7 +73,7 @@ everyone gets the same version of them:
   image or skips because a tool is missing
 - **commit-msg**: Validates commit messages with [commitlint](https://commitlint.js.org/) following [Conventional Commits](https://www.conventionalcommits.org/)
 - **pre-push**: Runs `pytest`, a `docker build` (hadolint only reads the `Dockerfile` as text, so nothing else
-  proves the image still builds), then re-runs all of the above across
+  shows the image still builds), then re-runs all of the above across
   the whole repository in check mode, so nothing reaches the remote that CI would reject
 
 The hooks and the GitHub Actions workflows run the same commands on purpose. The hook catches a
