@@ -54,7 +54,9 @@
       "erroring",
       "unreferenced",
       "blockquote",
-      "blockquotes"
+      "blockquotes",
+      "Cobertura",
+      "JUnit"
     ]
   },
   "ltex.disabledRules": {
