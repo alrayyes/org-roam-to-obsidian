@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.9.6](https://github.com/alrayyes/org-roam-to-obsidian/compare/v3.9.5...v3.9.6) (2026-10-09)
+
+
+### Bug Fixes
+
+* **deps:** bump python from `c6ead21` to `9e9fde4` ([#197](https://github.com/alrayyes/org-roam-to-obsidian/issues/197)) ([961baa7](https://github.com/alrayyes/org-roam-to-obsidian/commit/961baa71304f9bfd2fc29b912908f2b2c723e79e))
+
 ## [3.9.5](https://github.com/alrayyes/org-roam-to-obsidian/compare/v3.9.4...v3.9.5) (2026-09-11)
 
 
