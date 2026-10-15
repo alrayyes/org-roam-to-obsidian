@@ -27,25 +27,49 @@ jobs:
       - name: Run ruff check
         run: ruff check .
 
+  # Fails only on advisories this change adds to requirements-dev.txt over its base
+  # (rules/dependencies.md). What is already on main is the scan's to track, in
+  # advisory-scan.yml, so a new advisory never turns an unrelated pull request red. The
+  # job always runs and reports; its steps run only when requirements-dev.txt changed,
+  # and on a push to main. convert.py has no dependencies outside the standard library,
+  # so the pinned dev tooling is the whole tree.
   pip-audit:
     name: pip-audit
     runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - id: changed
+        env:
+          EVENT: ${{ github.event_name }}
+          BASE: ${{ github.event.pull_request.base.sha }}
+        run: |
+          if [ "${EVENT}" != pull_request ] || git diff --name-only "${BASE}...HEAD" | grep -Fxq requirements-dev.txt; then
+            echo "deps=true" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Set up Python
+        if: steps.changed.outputs.deps == 'true'
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.14"
 
-      # convert.py itself has no dependencies outside the standard library, so
-      # the only thing to audit is the pinned dev tooling in
-      # requirements-dev.txt.
       - name: Install pip-audit
+        if: steps.changed.outputs.deps == 'true'
         run: pip install pip-audit==2.10.1
 
-      - name: Run pip-audit
-        run: pip-audit -r requirements-dev.txt
+      # Pinned to a main commit of alrayyes/advisory-scan until its first release; re-pin then.
+      - name: Audit what this change adds
+        if: steps.changed.outputs.deps == 'true'
+        uses: alrayyes/advisory-scan@425418a63e80eb10142fbd2e82127b7ef3a51d68
+        with:
+          mode: gate
+          command: pip-audit -r requirements-dev.txt
 
   markdown:
     name: Markdown
