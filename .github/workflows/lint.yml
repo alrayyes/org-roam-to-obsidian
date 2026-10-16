@@ -70,10 +70,9 @@ jobs:
         if: steps.changed.outputs.deps == 'true'
         run: pip install pip-audit==2.10.1
 
-      # Pinned to a main commit of alrayyes/advisory-scan until its first release; re-pin then.
       - name: Audit what this change adds
         if: steps.changed.outputs.deps == 'true'
-        uses: alrayyes/advisory-scan@425418a63e80eb10142fbd2e82127b7ef3a51d68
+        uses: alrayyes/advisory-scan@9801551dad16ce63853b2babfda885365d368232 # v0.3.0
         with:
           mode: gate
           command: pip-audit -r requirements-dev.txt
