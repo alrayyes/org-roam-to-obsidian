@@ -1,7 +1,9 @@
 # The scan half of rules/dependencies.md: audit main and keep one open "Dependency advisories"
 # issue that lists what's there. Daily for advisories published against pins that haven't
-# moved, on a requirements push so a merged fix closes the ticket at once, and by hand. An
-# audit that errors (PyPI down) fails the job and leaves the ticket alone.
+# moved, on a requirements or bun.lock push so a merged fix closes the ticket at once, and by
+# hand. Both ecosystems (requirements-dev.txt through pip-audit, bun.lock through bun audit)
+# feed the one ticket. An audit that errors (PyPI or the npm registry down) fails the job
+# and leaves the ticket alone.
 name: Advisory scan
 
 on:
@@ -9,7 +11,7 @@ on:
     - cron: "41 5 * * *"
   push:
     branches: [main]
-    paths: [requirements-dev.txt, .github/workflows/advisory-scan.yml]
+    paths: [requirements-dev.txt, package.json, bun.lock, .github/workflows/advisory-scan.yml]
   workflow_dispatch:
 
 permissions:
@@ -34,8 +36,16 @@ jobs:
       # convert.py has no dependencies outside the standard library, so the only
       # thing to audit is the pinned dev tooling in requirements-dev.txt.
       - run: pip install pip-audit==2.10.1
+      # bun audit reads bun.lock directly; the version is the one lint.yml pins.
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: "1.3.14"
       - uses: alrayyes/advisory-scan@9801551dad16ce63853b2babfda885365d368232 # v0.3.0
         with:
           mode: scan
-          command: pip-audit -r requirements-dev.txt
+          # One line per audit, so an error in either fails the job instead of hiding
+          # behind the other's advisory IDs.
+          commands: |
+            pip-audit -r requirements-dev.txt
+            bun audit
           labels: dependencies
