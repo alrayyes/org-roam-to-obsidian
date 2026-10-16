@@ -100,6 +100,22 @@ as permission to hand it the JavaScript, and the day Biome ships a YAML formatte
 by one line. `biome.json` turns on comments and trailing commas for the parser, because
 `.markdownlint-cli2.jsonc` uses both, and it skips `bun.lock`.
 
+## Dependency advisories
+
+Two manifests are audited: `requirements-dev.txt` with `pip-audit`, and `bun.lock` (declared in `package.json`) with
+`bun audit`. `convert.py` uses only the standard library, so those two cover the
+development tooling. The audits run in CI and nowhere in the git hooks, because a hook can't compare a
+branch with its base and would fail on advisories that are already on `main`.
+
+- **On a pull request**, the `pip-audit` and `bun-audit` jobs in `lint.yml` audit the base and the
+  head and fail only on advisories the head adds. Each runs its audit only when its manifest or
+  the workflow changed.
+- **On `main`**, `advisory-scan.yml` runs both audits daily, on a push that changes a manifest, and
+  by hand. It keeps one open `Dependency advisories` issue listing every ID from both. If either
+  audit errors, the job fails and leaves the issue alone.
+
+To check by hand, run `pip-audit -r requirements-dev.txt` and `bun audit` from the repo root.
+
 ## Prose
 
 Layout and structure are one thing. Whether the prose reads well is another, and two more tools
