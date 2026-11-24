@@ -29,7 +29,7 @@ longer is.
   repo is public.
 - Fix `flake.nix`'s hand-maintained version (already drifted) by wiring it
   into release-please's generic `extra-files` updater.
-- Remove `README.md`'s stale "not by design" section referencing two issues
+- Remove `README.md`'s stale “not by design” section referencing two issues
   (#17, #18) that were closed as fixed weeks earlier, with no `xfail` tests
   left to back the claim.
 - Apply labels to 21 issues that had none, from the repo's existing

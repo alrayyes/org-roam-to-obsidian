@@ -89,7 +89,7 @@ When a created and/or modified timestamp is supplied to the converter, each SHAL
 - **WHEN** converting with `created_keys=["created", "created_at", "date"]`
 - **THEN** the frontmatter contains all three keys, each carrying the same timestamp
 
-#### Scenario: The modified key can be renamed without a false match on "modified"
+#### Scenario: The modified key can be renamed without a false match on “modified”
 
 - **WHEN** converting with `modified_keys=["lastmod", "last-modified"]`
 - **THEN** the frontmatter contains `lastmod:` and `last-modified:`, and no line starts with the bare key `modified:`
