@@ -1,5 +1,16 @@
 # Changelog
 
+## [3.9.8](https://github.com/alrayyes/org-roam-to-obsidian/compare/v3.9.7...v3.9.8) (2026-11-24)
+
+
+### Bug Fixes
+
+* **deps:** bump python from `20a82db` to `a0f2e26` ([#249](https://github.com/alrayyes/org-roam-to-obsidian/issues/249)) ([c9fa2e0](https://github.com/alrayyes/org-roam-to-obsidian/commit/c9fa2e006b5186640350f57cadd329727e1ff90d))
+* **deps:** bump python from `2699b90` to `20a82db` ([#243](https://github.com/alrayyes/org-roam-to-obsidian/issues/243)) ([27abe51](https://github.com/alrayyes/org-roam-to-obsidian/commit/27abe51a78cd067162baedcea4bf63887be4279f))
+* **deps:** bump python from `a0f2e26` to `0f9552b` ([#255](https://github.com/alrayyes/org-roam-to-obsidian/issues/255)) ([b9074ab](https://github.com/alrayyes/org-roam-to-obsidian/commit/b9074abb45449a8f29178f0b41621e29cc96cdf5))
+* **deps:** bump python from 3.14-alpine to 3.15-alpine ([#227](https://github.com/alrayyes/org-roam-to-obsidian/issues/227)) ([85b0ea9](https://github.com/alrayyes/org-roam-to-obsidian/commit/85b0ea9323e7ba228961dd8a8529842adc5b2736))
+* **openspec:** use curly quotes in archived specs ([#266](https://github.com/alrayyes/org-roam-to-obsidian/issues/266)) ([ebce232](https://github.com/alrayyes/org-roam-to-obsidian/commit/ebce23239762be378bc859e2023e0da62c13a60f))
+
 ## [3.9.7](https://github.com/alrayyes/org-roam-to-obsidian/compare/v3.9.6...v3.9.7) (2026-10-09)
 
 
