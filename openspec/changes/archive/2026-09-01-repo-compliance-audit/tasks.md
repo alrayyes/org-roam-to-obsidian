@@ -21,5 +21,5 @@
 
 ## 5. Documentation and label cleanup
 
-- [x] 5.1 Remove `README.md`'s stale "not by design" section referencing closed issues #17/#18, with no `xfail` tests left to back the claim (#140)
+- [x] 5.1 Remove `README.md`'s stale “not by design” section referencing closed issues #17/#18, with no `xfail` tests left to back the claim (#140)
 - [x] 5.2 Apply labels to the 21 issues (#15-#83) that had none, from the repo's existing stock label set — decided against a `kind/`+`topic/` migration (#127)
